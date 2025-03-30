@@ -8,3 +8,6 @@ build:
 
 run:
 	mvn exec:java -q -Dexec.mainClass="net.nilosplace.ElasticSearchCli.Main"
+
+grammar:
+	mvn antlr4:antlr4

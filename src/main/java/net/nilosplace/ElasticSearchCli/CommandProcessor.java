@@ -3,6 +3,13 @@ package net.nilosplace.ElasticSearchCli;
 import java.util.Scanner;
 import java.util.StringJoiner;
 
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
+
+import net.nilosplace.ElasticSearchCli.grammar.CommandGrammarLexer;
+import net.nilosplace.ElasticSearchCli.grammar.CommandGrammarParser;
+
 public class CommandProcessor {
 
 	public CommandProcessor(String[] args) {
@@ -11,15 +18,24 @@ public class CommandProcessor {
 			for(String arg: args) {
 				joiner.add(arg);
 			}
-			System.out.println("Command: " + joiner.toString());
+			String line = joiner.toString();
+			processCommand(line);
 		} else {
 			Scanner scanner = new Scanner(System.in);
 			System.out.print("> ");
 			while(scanner.hasNextLine()) {
 				String line = scanner.nextLine();
-				System.out.println("Command: " + line);
+				processCommand(line);
 				System.out.print("> ");
 			}
 		}
+	}
+
+	private void processCommand(String inputCommand) {
+		CharStream charStream = CharStreams.fromString(inputCommand);
+		CommandGrammarLexer lexer = new CommandGrammarLexer(charStream);
+		CommonTokenStream tokens = new CommonTokenStream(lexer);
+		CommandGrammarParser parser = new CommandGrammarParser(tokens);
+		System.out.println("Command: " + inputCommand + " -> " + parser.command());
 	}
 }
