@@ -4,50 +4,62 @@ options {
 	language=Java;
 }
 
-command:
-	(configCommand | indexCommand | repoCommand | snapshotCommand | aliasCommand | clusterCommand | quitCommand) EOF;
+@header {
+import net.nilosplace.ElasticSearchCli.commands.*;
+}
 
-configCommand:
-	CONFIG SET ARG ARG
-	| CONFIG PRINT
-	| CONFIG LOAD ARG
-	| CONFIG SAVE ARG
+input returns[Command command]:
+	config { $command = $config.command; }
+	| index
+	| repo
+	| snapshot
+	| alias
+	| cluster
+	| quit { $command = $quit.command; }
+	EOF;
+
+config returns[ConfigCommand command]:
+	CONFIG SET name=ARG value=ARG { $command = new ConfigSetCommand($name.text, $value.text); }
+	| CONFIG GET name=ARG { $command = new ConfigGetCommand($name.text); }
+	| CONFIG PRINT { $command = new ConfigPrintCommand(); }
+	| CONFIG LOAD filename=ARG { $command = new ConfigLoadCommand($filename.text); }
+	| CONFIG SAVE filename=ARG { $command = new ConfigSaveCommand($filename.text); }
 	;
 
-indexCommand:
+index:
 	INDEX LIST
 	| INDEX INFO ARG
 	| INDEX SWITCHALIAS ARG ARG ARG
 	| INDEX DELETE ARG
 	;
 
-repoCommand:
+repo:
 	REPO LIST
 	| REPO DELETE ARG
 	| REPO CREATE ARG ARG
 	;
 
-snapshotCommand:
+snapshot:
 	SNAPSHOT LIST
 	| SNAPSHOT DELETE ARG
 	| SNAPSHOT CREATE ARG ARG
 	;
 
-aliasCommand:
+alias:
 	ALIAS LIST ARG
 	| ALIAS CREATE ARG ARG
 	| ALIAS REMOVE ARG ARG
 	;
 
-clusterCommand:
+cluster:
 	CLUSTER INFO
 	| CLUSTER NODES
 	| CLUSTER CONFIG GET ARG
 	| CLUSTER CONFIG SET ARG ARG
 	;
 
-quitCommand:
-	QUIT
+quit returns[QuitCommand command]:
+	(QUIT | EXIT) { $command = new QuitCommand(); }
 	;
 
 CONFIG: 'config';
@@ -69,12 +81,9 @@ ALIAS: 'alias';
 LOAD: 'load';
 SAVE: 'save';
 QUIT: 'quit';
+EXIT: 'exit';
 
-ARG:		[A-Za-z0-9_]+;
+ARG:		[A-Za-z0-9_.]+;
 
 WS: [ \t\r\n] -> skip;
 EOL: '\r'? '\n' -> skip;
-
-
-
-

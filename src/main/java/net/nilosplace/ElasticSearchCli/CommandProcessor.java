@@ -7,6 +7,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 
+import net.nilosplace.ElasticSearchCli.commands.Command;
 import net.nilosplace.ElasticSearchCli.grammar.CommandGrammarLexer;
 import net.nilosplace.ElasticSearchCli.grammar.CommandGrammarParser;
 
@@ -36,6 +37,7 @@ public class CommandProcessor {
 		CommandGrammarLexer lexer = new CommandGrammarLexer(charStream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		CommandGrammarParser parser = new CommandGrammarParser(tokens);
-		System.out.println("Command: " + inputCommand + " -> " + parser.command());
+		Command command = parser.input().command;
+		command.execute();
 	}
 }

@@ -27,6 +27,21 @@
 			<artifactId>antlr4-runtime</artifactId>
 			<version>4.13.2</version>
 		</dependency>
+		<dependency>
+			<groupId>io.smallrye.config</groupId>
+			<artifactId>smallrye-config</artifactId>
+			<version>3.12.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.36</version>
+		</dependency>
+		<dependency>
+			<groupId>net.nilosplace</groupId>
+			<artifactId>process-display</artifactId>
+			<version>1.0.12</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<finalName>${project.artifactId}</finalName>
