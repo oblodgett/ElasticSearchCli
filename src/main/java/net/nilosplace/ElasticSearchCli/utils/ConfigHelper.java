@@ -1,9 +1,10 @@
-package net.nilosplace.ElasticSearchCli.commands.config;
+package net.nilosplace.ElasticSearchCli.utils;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import io.smallrye.config.ConfigMapping;
 import io.smallrye.config.SmallRyeConfig;
 import io.smallrye.config.SmallRyeConfigBuilder;
@@ -16,6 +17,8 @@ public class ConfigHelper {
 	private static ConfigHelper instance = null;
 	private ObjectFileStorage<Map<String, Object>> storage = new ObjectFileStorage<>();
 
+	private ElasticSearchConnection esConnection;
+
 	@Getter
 	private Map<String, Object> config;
 
@@ -26,6 +29,16 @@ public class ConfigHelper {
 		config.put("es.prot", es.prot());
 		config.put("es.host", es.host());
 		config.put("es.port", es.port());
+		setupEsConnection();
+	}
+
+	private void setupEsConnection() {
+		esConnection = new ElasticSearchConnection((String)config.get("es.host"), (int)config.get("es.port"));
+	}
+
+	private void resetEsConnection() {
+		esConnection.close();
+		esConnection = new ElasticSearchConnection((String)config.get("es.host"), (int)config.get("es.port"));
 	}
 
 	public Object get(String name) {
@@ -49,6 +62,10 @@ public class ConfigHelper {
 			instance = new ConfigHelper();
 		}
 		return instance;
+	}
+
+	public ElasticsearchClient getEsClient() {
+		return esConnection.getClient();
 	}
 
 	public void print() {

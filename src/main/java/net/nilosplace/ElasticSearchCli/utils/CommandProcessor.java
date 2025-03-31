@@ -1,4 +1,4 @@
-package net.nilosplace.ElasticSearchCli;
+package net.nilosplace.ElasticSearchCli.utils;
 
 import java.util.Scanner;
 import java.util.StringJoiner;
