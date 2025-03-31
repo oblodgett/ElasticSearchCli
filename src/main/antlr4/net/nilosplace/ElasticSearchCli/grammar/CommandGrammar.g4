@@ -6,12 +6,16 @@ options {
 
 @header {
 import net.nilosplace.ElasticSearchCli.commands.*;
+import net.nilosplace.ElasticSearchCli.commands.config.*;
+import net.nilosplace.ElasticSearchCli.commands.estop.*;
+import net.nilosplace.ElasticSearchCli.commands.quit.*;
 }
 
 input returns[Command command]:
 	config { $command = $config.command; }
 	| index
 	| repo
+	| estop { $command = $estop.command; }
 	| snapshot
 	| alias
 	| cluster
@@ -31,6 +35,10 @@ index:
 	| INDEX INFO ARG
 	| INDEX SWITCHALIAS ARG ARG ARG
 	| INDEX DELETE ARG
+	;
+
+estop returns[EsTopCommand command]:
+	ESTOP { $command = new EsTopCommand(); }
 	;
 
 repo:
@@ -72,6 +80,7 @@ CREATE: 'create';
 REMOVE: 'remove';
 SET: 'set';
 GET: 'get';
+ESTOP: 'estop';
 CLUSTER: 'cluster';
 INFO: 'info';
 NODES: 'nodes';

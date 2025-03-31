@@ -1,4 +1,4 @@
-package net.nilosplace.ElasticSearchCli;
+package net.nilosplace.ElasticSearchCli.commands.config;
 
 import java.util.HashMap;
 import java.util.Map;

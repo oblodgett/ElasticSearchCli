@@ -1,4 +1,4 @@
-package net.nilosplace.ElasticSearchCli.commands;
+package net.nilosplace.ElasticSearchCli.commands.config;
 
 public class ConfigPrintCommand extends ConfigCommand {
 

@@ -1,4 +1,6 @@
-package net.nilosplace.ElasticSearchCli.commands;
+package net.nilosplace.ElasticSearchCli.commands.quit;
+
+import net.nilosplace.ElasticSearchCli.commands.Command;
 
 public class QuitCommand extends Command {
 

@@ -38,6 +38,10 @@ public class CommandProcessor {
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		CommandGrammarParser parser = new CommandGrammarParser(tokens);
 		Command command = parser.input().command;
-		command.execute();
+		if(command != null) {
+			command.execute();
+		} else {
+			System.out.println("Command failed to process: " + inputCommand);
+		}
 	}
 }
