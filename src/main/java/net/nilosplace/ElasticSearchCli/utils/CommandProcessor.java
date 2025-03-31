@@ -3,9 +3,9 @@ package net.nilosplace.ElasticSearchCli.utils;
 import java.util.Scanner;
 import java.util.StringJoiner;
 
-import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
 
 import net.nilosplace.ElasticSearchCli.commands.Command;
 import net.nilosplace.ElasticSearchCli.grammar.CommandGrammarLexer;

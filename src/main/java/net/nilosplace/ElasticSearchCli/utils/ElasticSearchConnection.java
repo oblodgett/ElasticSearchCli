@@ -14,7 +14,7 @@ public class ElasticSearchConnection {
 
 	private ElasticsearchClient esClient;
 
-	public ElasticSearchConnection(String host, int port) {
+	public ElasticSearchConnection(String host, String port) {
 		HttpHost[] hosts;
 
 		if(host.contains(",")) {

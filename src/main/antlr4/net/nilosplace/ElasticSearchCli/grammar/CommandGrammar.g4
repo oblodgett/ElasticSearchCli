@@ -6,6 +6,7 @@ options {
 
 @header {
 import net.nilosplace.ElasticSearchCli.commands.*;
+import net.nilosplace.ElasticSearchCli.commands.cluster.*;
 import net.nilosplace.ElasticSearchCli.commands.config.*;
 import net.nilosplace.ElasticSearchCli.commands.estop.*;
 import net.nilosplace.ElasticSearchCli.commands.quit.*;
@@ -18,7 +19,7 @@ input returns[Command command]:
 	| estop { $command = $estop.command; }
 	| snapshot
 	| alias
-	| cluster
+	| cluster { $command = $cluster.command; }
 	| quit { $command = $quit.command; }
 	EOF;
 
@@ -59,11 +60,11 @@ alias:
 	| ALIAS REMOVE ARG ARG
 	;
 
-cluster:
-	CLUSTER INFO
-	| CLUSTER NODES
-	| CLUSTER CONFIG GET ARG
-	| CLUSTER CONFIG SET ARG ARG
+cluster returns[ClusterCommand command]:
+	CLUSTER INFO { $command = new ClusterInfoCommand(); }
+	| CLUSTER NODES { $command = new ClusterNodesCommand(); }
+	| CLUSTER CONFIG GET configName=ARG { $command = new ClusterConfigGetCommand($configName.text); }
+	| CLUSTER CONFIG SET configName=ARG configValue=ARG { $command = new ClusterConfigSetCommand($configName.text, $configValue.text); }
 	;
 
 quit returns[QuitCommand command]:
@@ -92,7 +93,7 @@ SAVE: 'save';
 QUIT: 'quit';
 EXIT: 'exit';
 
-ARG:		[A-Za-z0-9_.]+;
+ARG:		[A-Za-z0-9_.:,]+;
 
 WS: [ \t\r\n] -> skip;
 EOL: '\r'? '\n' -> skip;

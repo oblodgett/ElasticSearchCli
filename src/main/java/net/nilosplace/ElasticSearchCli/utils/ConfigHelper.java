@@ -15,12 +15,12 @@ import net.nilosplace.process_display.util.ObjectFileStorage;
 public class ConfigHelper {
 
 	private static ConfigHelper instance = null;
-	private ObjectFileStorage<Map<String, Object>> storage = new ObjectFileStorage<>();
+	private ObjectFileStorage<Map<String, String>> storage = new ObjectFileStorage<>();
 
 	private ElasticSearchConnection esConnection;
 
 	@Getter
-	private Map<String, Object> config;
+	private Map<String, String> config;
 
 	private ConfigHelper() {
 		SmallRyeConfig srcConfig = new SmallRyeConfigBuilder().withMapping(Es.class).build();
@@ -33,24 +33,26 @@ public class ConfigHelper {
 	}
 
 	private void setupEsConnection() {
-		esConnection = new ElasticSearchConnection((String)config.get("es.host"), (int)config.get("es.port"));
+		esConnection = new ElasticSearchConnection(config.get("es.host"), config.get("es.port"));
 	}
 
 	private void resetEsConnection() {
 		esConnection.close();
-		esConnection = new ElasticSearchConnection((String)config.get("es.host"), (int)config.get("es.port"));
+		esConnection = new ElasticSearchConnection(config.get("es.host"), config.get("es.port"));
 	}
 
 	public Object get(String name) {
 		return config.get(name);
 	}
 
-	public void put(String name, Object value) {
+	public void put(String name, String value) {
 		config.put(name, value);
+		resetEsConnection();
 	}
 
 	public void load(String filename) throws Exception {
 		config = storage.readObjectFromFile(filename);
+		resetEsConnection();
 	}
 
 	public void save(String filename) throws Exception {
@@ -69,7 +71,7 @@ public class ConfigHelper {
 	}
 
 	public void print() {
-		for(Entry<String, Object> entry: config.entrySet()) {
+		for(Entry<String, String> entry: config.entrySet()) {
 			System.out.println(entry.getKey() + ": " + entry.getValue());
 		}
 	}
@@ -81,6 +83,6 @@ public class ConfigHelper {
 		@WithDefault("localhost")
 		String host();
 		@WithDefault("9200")
-		int port();
+		String port();
 	}
 }
