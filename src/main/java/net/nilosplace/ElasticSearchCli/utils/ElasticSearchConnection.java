@@ -17,10 +17,10 @@ public class ElasticSearchConnection {
 	public ElasticSearchConnection(String host, String port) {
 		HttpHost[] hosts;
 
-		if(host.contains(",")) {
+		if (host.contains(",")) {
 			String[] nodes = host.split(",");
 			hosts = new HttpHost[nodes.length];
-			for(int i = 0; i < nodes.length; i++) {
+			for (int i = 0; i < nodes.length; i++) {
 				hosts[i] = HttpHost.create(nodes[i]);
 			}
 		} else {
@@ -46,5 +46,5 @@ public class ElasticSearchConnection {
 			e.printStackTrace();
 		}
 	}
-	
+
 }

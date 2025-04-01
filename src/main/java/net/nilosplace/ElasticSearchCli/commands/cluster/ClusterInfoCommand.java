@@ -1,14 +1,10 @@
 package net.nilosplace.ElasticSearchCli.commands.cluster;
 
-import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import co.elastic.clients.elasticsearch.core.InfoResponse;
 import java.io.IOException;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.ElasticsearchException;
 import co.elastic.clients.elasticsearch.core.InfoResponse;
-import co.elastic.clients.elasticsearch.nodes.ElasticsearchNodesClient;
-import co.elastic.clients.elasticsearch.nodes.NodesInfoResponse;
 
 public class ClusterInfoCommand extends ClusterCommand {
 

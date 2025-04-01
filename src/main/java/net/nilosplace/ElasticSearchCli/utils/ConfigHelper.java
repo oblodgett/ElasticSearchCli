@@ -19,8 +19,7 @@ public class ConfigHelper {
 
 	private ElasticSearchConnection esConnection;
 
-	@Getter
-	private Map<String, String> config;
+	@Getter private Map<String, String> config;
 
 	private ConfigHelper() {
 		SmallRyeConfig srcConfig = new SmallRyeConfigBuilder().withMapping(Es.class).build();
@@ -60,7 +59,7 @@ public class ConfigHelper {
 	}
 
 	public static ConfigHelper getInstance() {
-		if(instance == null) {
+		if (instance == null) {
 			instance = new ConfigHelper();
 		}
 		return instance;
@@ -71,7 +70,7 @@ public class ConfigHelper {
 	}
 
 	public void print() {
-		for(Entry<String, String> entry: config.entrySet()) {
+		for (Entry<String, String> entry : config.entrySet()) {
 			System.out.println(entry.getKey() + ": " + entry.getValue());
 		}
 	}
@@ -80,8 +79,10 @@ public class ConfigHelper {
 	public interface Es {
 		@WithDefault("http")
 		String prot();
+
 		@WithDefault("localhost")
 		String host();
+
 		@WithDefault("9200")
 		String port();
 	}

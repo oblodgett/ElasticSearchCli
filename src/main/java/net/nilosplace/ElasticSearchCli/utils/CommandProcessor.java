@@ -14,9 +14,9 @@ import net.nilosplace.ElasticSearchCli.grammar.CommandGrammarParser;
 public class CommandProcessor {
 
 	public CommandProcessor(String[] args) {
-		if(args.length > 0) {
+		if (args.length > 0) {
 			StringJoiner joiner = new StringJoiner(" ");
-			for(String arg: args) {
+			for (String arg : args) {
 				joiner.add(arg);
 			}
 			String line = joiner.toString();
@@ -24,7 +24,7 @@ public class CommandProcessor {
 		} else {
 			Scanner scanner = new Scanner(System.in);
 			System.out.print("> ");
-			while(scanner.hasNextLine()) {
+			while (scanner.hasNextLine()) {
 				String line = scanner.nextLine();
 				processCommand(line);
 				System.out.print("> ");
@@ -38,7 +38,7 @@ public class CommandProcessor {
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		CommandGrammarParser parser = new CommandGrammarParser(tokens);
 		Command command = parser.input().command;
-		if(command != null) {
+		if (command != null) {
 			command.execute();
 		} else {
 			System.out.println("Command failed to process: " + inputCommand);
