@@ -6,10 +6,6 @@ import co.elastic.clients.elasticsearch.nodes.NodesInfoResponse;
 public class ClusterNodesCommand extends ClusterCommand {
 
 	@Override
-	public void print() {
-	}
-
-	@Override
 	public void execute() {
 		ElasticsearchClient client = configHelper.getEsClient();
 		try {

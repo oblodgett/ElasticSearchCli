@@ -13,11 +13,6 @@ import co.elastic.clients.elasticsearch.nodes.NodesInfoResponse;
 public class ClusterInfoCommand extends ClusterCommand {
 
 	@Override
-	public void print() {
-
-	}
-
-	@Override
 	public void execute() {
 		ElasticsearchClient client = configHelper.getEsClient();
 		try {
@@ -26,7 +21,7 @@ public class ClusterInfoCommand extends ClusterCommand {
 		} catch (ElasticsearchException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
-			//e.printStackTrace();
+			// e.printStackTrace();
 			System.err.println("Error: " + e.getMessage() + " Host: " + configHelper.getConfig().get("es.host") + ":" + configHelper.getConfig().get("es.port"));
 		}
 	}

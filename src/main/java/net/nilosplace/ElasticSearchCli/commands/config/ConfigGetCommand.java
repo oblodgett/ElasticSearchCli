@@ -9,13 +9,8 @@ public class ConfigGetCommand extends ConfigCommand {
 	}
 
 	@Override
-	public void print() {
-		System.out.println("Command: config get " + name);
-	}
-
-	@Override
 	public void execute() {
-		if(configHelper.get(name) != null) {
+		if (configHelper.get(name) != null) {
 			System.out.println(name + ": " + configHelper.get(name));
 		} else {
 			System.out.println("No config entry found for: " + name);

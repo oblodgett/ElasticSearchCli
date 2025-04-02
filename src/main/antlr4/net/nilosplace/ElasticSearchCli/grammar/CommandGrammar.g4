@@ -63,6 +63,7 @@ alias:
 cluster returns[ClusterCommand command]:
 	CLUSTER INFO { $command = new ClusterInfoCommand(); }
 	| CLUSTER NODES { $command = new ClusterNodesCommand(); }
+	| CLUSTER GENERATE docAmount=ARG threadCount=ARG { $command = new ClusterGenerateDataCommand($docAmount.text, $threadCount.text); }
 	| CLUSTER CONFIG GET configName=ARG { $command = new ClusterConfigGetCommand($configName.text); }
 	| CLUSTER CONFIG SET configName=ARG configValue=ARG { $command = new ClusterConfigSetCommand($configName.text, $configValue.text); }
 	;
@@ -83,6 +84,7 @@ SET: 'set';
 GET: 'get';
 ESTOP: 'estop';
 CLUSTER: 'cluster';
+GENERATE: 'generate';
 INFO: 'info';
 NODES: 'nodes';
 SWITCHALIAS: 'switchalias';

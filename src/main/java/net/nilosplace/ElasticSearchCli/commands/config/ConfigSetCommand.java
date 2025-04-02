@@ -11,11 +11,6 @@ public class ConfigSetCommand extends ConfigCommand {
 	}
 
 	@Override
-	public void print() {
-		System.out.println("Command: config set " + name + " " + value);
-	}
-
-	@Override
 	public void execute() {
 		configHelper.put(name, value);
 	}

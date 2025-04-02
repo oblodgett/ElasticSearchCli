@@ -9,11 +9,6 @@ public class ConfigLoadCommand extends ConfigCommand {
 	}
 
 	@Override
-	public void print() {
-		System.out.println("Command: config load " + filename);
-	}
-	
-	@Override
 	public void execute() {
 		System.out.println("Loading Config from: " + filename);
 		try {

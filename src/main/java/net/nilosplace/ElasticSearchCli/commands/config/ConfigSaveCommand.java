@@ -9,11 +9,6 @@ public class ConfigSaveCommand extends ConfigCommand {
 	}
 
 	@Override
-	public void print() {
-		System.out.println("Command: config save " + filename);
-	}
-
-	@Override
 	public void execute() {
 		System.out.println("Save Config to: " + filename);
 		try {
@@ -23,5 +18,5 @@ public class ConfigSaveCommand extends ConfigCommand {
 			System.err.println("Error: " + e.getMessage());
 		}
 	}
-	
+
 }

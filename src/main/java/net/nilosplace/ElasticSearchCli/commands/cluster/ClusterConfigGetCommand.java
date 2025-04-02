@@ -13,11 +13,6 @@ public class ClusterConfigGetCommand extends ClusterCommand {
 	}
 
 	@Override
-	public void print() {
-
-	}
-
-	@Override
 	public void execute() {
 		ElasticsearchClient client = configHelper.getEsClient();
 		try {

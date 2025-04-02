@@ -34,9 +34,4 @@ public class EsTopCommand extends Command {
 		}
 	}
 
-	@Override
-	public void print() {
-
-	}
-	
 }
