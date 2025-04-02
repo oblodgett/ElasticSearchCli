@@ -1,0 +1,61 @@
+{ - 
+  "id": 3,
+  "type": "PEER",
+  "stage": "INDEX",
+  "primary": true,
+  "start_time": "2025-04-01T20:54:46.851Z",
+  "start_time_in_millis": 1743540886851,
+  "total_time": "1m",
+  "total_time_in_millis": 63499,
+  "source": { - 
+    "id": "JIsFAqL8QoiDhoY9CX1klw",
+    "host": "172.31.30.2",
+    "transport_address": "172.31.30.2:9300",
+    "ip": "172.31.30.2",
+    "name": "agr.stage.elasticsearch.server02"
+  },
+  "target": { - 
+    "id": "ZosoHHZWRUi_I3mMVrt37A",
+    "host": "172.31.30.1",
+    "transport_address": "172.31.30.1:9300",
+    "ip": "172.31.30.1",
+    "name": "agr.stage.elasticsearch.server01"
+  },
+  "index": { - 
+    "size": { - 
+      "total": "3.2gb",
+      "total_in_bytes": 3526671869,
+      "reused": "0b",
+      "reused_in_bytes": 0,
+      "recovered": "1.2gb",
+      "recovered_in_bytes": 1336089013,
+      "percent": "37.9%"
+    },
+    "files": { - 
+      "total": 171,
+      "reused": 0,
+      "recovered": 160,
+      "percent": "93.6%"
+    },
+    "total_time": "1m",
+    "total_time_in_millis": 63480,
+    "source_throttle_time": "48.3s",
+    "source_throttle_time_in_millis": 48369,
+    "target_throttle_time": "57.3s",
+    "target_throttle_time_in_millis": 57378
+  },
+  "translog": { - 
+    "recovered": 0,
+    "total": 0,
+    "percent": "100.0%",
+    "total_on_start": 0,
+    "total_time": "0s",
+    "total_time_in_millis": 0
+  },
+  "verify_index": { - 
+    "check_index_time": "0s",
+    "check_index_time_in_millis": 0,
+    "total_time": "0s",
+    "total_time_in_millis": 0
+  }
+}

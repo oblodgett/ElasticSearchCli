@@ -1,0 +1,209 @@
+{ - 
+  "routing": { - 
+    "state": "RELOCATING",
+    "primary": true,
+    "node": "JIsFAqL8QoiDhoY9CX1klw",
+    "relocating_node": "ZosoHHZWRUi_I3mMVrt37A"
+  },
+  "docs": { - 
+    "count": 671216,
+    "deleted": 0
+  },
+  "store": { - 
+    "size": "3.2gb",
+    "size_in_bytes": 3526671869,
+    "total_data_set_size": "3.2gb",
+    "total_data_set_size_in_bytes": 3526671869,
+    "reserved": "0b",
+    "reserved_in_bytes": 0
+  },
+  "indexing": { - 
+    "index_total": 0,
+    "index_time": "0s",
+    "index_time_in_millis": 0,
+    "index_current": 0,
+    "index_failed": 0,
+    "delete_total": 0,
+    "delete_time": "0s",
+    "delete_time_in_millis": 0,
+    "delete_current": 0,
+    "noop_update_total": 0,
+    "is_throttled": false,
+    "throttle_time": "0s",
+    "throttle_time_in_millis": 0
+  },
+  "get": { - 
+    "total": 0,
+    "getTime": "0s",
+    "time_in_millis": 0,
+    "exists_total": 0,
+    "exists_time": "0s",
+    "exists_time_in_millis": 0,
+    "missing_total": 0,
+    "missing_time": "0s",
+    "missing_time_in_millis": 0,
+    "current": 0
+  },
+  "search": { - 
+    "open_contexts": 0,
+    "query_total": 0,
+    "query_time": "0s",
+    "query_time_in_millis": 0,
+    "query_current": 0,
+    "fetch_total": 0,
+    "fetch_time": "0s",
+    "fetch_time_in_millis": 0,
+    "fetch_current": 0,
+    "scroll_total": 0,
+    "scroll_time": "0s",
+    "scroll_time_in_millis": 0,
+    "scroll_current": 0,
+    "suggest_total": 0,
+    "suggest_time": "0s",
+    "suggest_time_in_millis": 0,
+    "suggest_current": 0
+  },
+  "merges": { - 
+    "current": 0,
+    "current_docs": 0,
+    "current_size": "0b",
+    "current_size_in_bytes": 0,
+    "total": 0,
+    "total_time": "0s",
+    "total_time_in_millis": 0,
+    "total_docs": 0,
+    "total_size": "0b",
+    "total_size_in_bytes": 0,
+    "total_stopped_time": "0s",
+    "total_stopped_time_in_millis": 0,
+    "total_throttled_time": "0s",
+    "total_throttled_time_in_millis": 0,
+    "total_auto_throttle": "20mb",
+    "total_auto_throttle_in_bytes": 20971520
+  },
+  "refresh": { - 
+    "total": 4,
+    "total_time": "0s",
+    "total_time_in_millis": 0,
+    "external_total": 2,
+    "external_total_time": "0s",
+    "external_total_time_in_millis": 0,
+    "listeners": 0
+  },
+  "flush": { - 
+    "total": 0,
+    "periodic": 0,
+    "total_time": "0s",
+    "total_time_in_millis": 0
+  },
+  "warmer": { - 
+    "current": 0,
+    "total": 1,
+    "total_time": "0s",
+    "total_time_in_millis": 0
+  },
+  "query_cache": { - 
+    "memory_size": "0b",
+    "memory_size_in_bytes": 0,
+    "total_count": 0,
+    "hit_count": 0,
+    "miss_count": 0,
+    "cache_size": 0,
+    "cache_count": 0,
+    "evictions": 0
+  },
+  "fielddata": { - 
+    "memory_size": "0b",
+    "memory_size_in_bytes": 0,
+    "evictions": 0
+  },
+  "completion": { - 
+    "size": "0b",
+    "size_in_bytes": 0
+  },
+  "segments": { - 
+    "count": 38,
+    "memory": "1.6mb",
+    "memory_in_bytes": 1760912,
+    "terms_memory": "1.2mb",
+    "terms_memory_in_bytes": 1262208,
+    "stored_fields_memory": "20.5kb",
+    "stored_fields_memory_in_bytes": 21040,
+    "term_vectors_memory": "0b",
+    "term_vectors_memory_in_bytes": 0,
+    "norms_memory": "168.6kb",
+    "norms_memory_in_bytes": 172672,
+    "points_memory": "0b",
+    "points_memory_in_bytes": 0,
+    "doc_values_memory": "297.8kb",
+    "doc_values_memory_in_bytes": 304992,
+    "index_writer_memory": "0b",
+    "index_writer_memory_in_bytes": 0,
+    "version_map_memory": "0b",
+    "version_map_memory_in_bytes": 0,
+    "fixed_bit_set": "0b",
+    "fixed_bit_set_memory_in_bytes": 0,
+    "max_unsafe_auto_id_timestamp": -1,
+    "file_sizes": { - 
+
+    }
+  },
+  "translog": { - 
+    "operations": 0,
+    "size": "55b",
+    "size_in_bytes": 55,
+    "uncommitted_operations": 0,
+    "uncommitted_size": "55b",
+    "uncommitted_size_in_bytes": 55,
+    "earliest_last_modified_age": 184338
+  },
+  "request_cache": { - 
+    "memory_size": "0b",
+    "memory_size_in_bytes": 0,
+    "evictions": 0,
+    "hit_count": 0,
+    "miss_count": 0
+  },
+  "recovery": { - 
+    "current_as_source": 1,
+    "current_as_target": 0,
+    "throttle_time": "2.6m",
+    "throttle_time_in_millis": 159036
+  },
+  "commit": { - 
+    "id": "zZHbqcUHFx+fyygheTb/Xw==",
+    "generation": 10,
+    "user_data": { - 
+      "local_checkpoint": "671215",
+      "max_unsafe_auto_id_timestamp": "-1",
+      "min_retained_seq_no": "564853",
+      "translog_uuid": "tPPvCrFeQw61PXI6vJR3rQ",
+      "history_uuid": "k7ZQTRr7QHeySbTOkK7fdg",
+      "max_seq_no": "671215"
+    },
+    "num_docs": 671216
+  },
+  "seq_no": { - 
+    "max_seq_no": 671215,
+    "local_checkpoint": 671215,
+    "global_checkpoint": 671215
+  },
+  "retention_leases": { - 
+    "primary_term": 2,
+    "version": 4,
+    "leases": [ - 
+      { - 
+        "id": "peer_recovery/JIsFAqL8QoiDhoY9CX1klw",
+        "retaining_seq_no": 671216,
+        "timestamp": 1743540728291,
+        "source": "peer recovery"
+      }
+    ]
+  },
+  "shard_path": { - 
+    "state_path": "/usr/share/elasticsearch/data/nodes/0",
+    "data_path": "/usr/share/elasticsearch/data/nodes/0",
+    "is_custom_data_path": false
+  }
+}
+
