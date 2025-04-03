@@ -2,9 +2,6 @@ package net.nilosplace.ElasticSearchCli.commands.estop;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.ElasticsearchException;
@@ -13,9 +10,7 @@ import co.elastic.clients.elasticsearch.cat.HealthResponse;
 import co.elastic.clients.elasticsearch.cat.IndicesResponse;
 import co.elastic.clients.elasticsearch.cat.NodesResponse;
 import co.elastic.clients.elasticsearch.cat.ShardsResponse;
-import co.elastic.clients.elasticsearch.cat.indices.IndicesRecord;
-import co.elastic.clients.elasticsearch.nodes.NodesInfoResponse;
-import co.elastic.clients.elasticsearch.nodes.info.NodeInfo;
+import co.elastic.clients.elasticsearch.indices.stats.IndicesStats;
 import net.nilosplace.ElasticSearchCli.utils.ConfigHelper;
 
 public class ClusterDataPoller extends Thread {
@@ -45,6 +40,8 @@ public class ClusterDataPoller extends Thread {
 				manager.setShardRecords(shardsResp.valueBody());
 				CountResponse countResp = client.cat().count();
 				manager.setCountRecords(countResp.valueBody());
+				IndicesStats statsResp = client.indices().stats().all();
+				manager.setIndicesStats(statsResp);
 				Date end = new Date();
 				Thread.sleep((pollInterval * 1000) - (end.getTime() - start.getTime()));
 			} catch (InterruptedException e) {

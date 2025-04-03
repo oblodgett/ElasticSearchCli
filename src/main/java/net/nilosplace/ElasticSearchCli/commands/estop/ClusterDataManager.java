@@ -10,6 +10,7 @@ import co.elastic.clients.elasticsearch.cat.health.HealthRecord;
 import co.elastic.clients.elasticsearch.cat.indices.IndicesRecord;
 import co.elastic.clients.elasticsearch.cat.nodes.NodesRecord;
 import co.elastic.clients.elasticsearch.cat.shards.ShardsRecord;
+import co.elastic.clients.elasticsearch.indices.stats.IndicesStats;
 import lombok.Data;
 
 @Data
@@ -20,6 +21,7 @@ public class ClusterDataManager {
 	private List<HealthRecord> healthRecords;
 	private List<ShardsRecord> shardRecords;
 	private List<CountRecord> countRecords;
+	private IndicesStats indicesStats;
 
 	public String getClusterName() {
 		if (healthRecords != null && healthRecords.size() > 0) {
@@ -65,21 +67,18 @@ public class ClusterDataManager {
 		return 0;
 	}
 
-	public String getCountTotal() {
-		if (countRecords != null && countRecords.size() > 0) {
-			return countRecords.get(0).count();
+	public long getCountTotal() {
+		if (indicesStats != null) {
+			return indicesStats.total().docs().count();
 		}
-		return "0";
+		return 0;
 	}
 
 	public long getTotalSize() {
-		long sum = 0;
-		if (indicesRecords != null) {
-			for (IndicesRecord record : indicesRecords) {
-				// sum += Long.parseLong(record.datasetSize());
-			}
+		if (indicesStats != null) {
+			return indicesStats.total().store().sizeInBytes();
 		}
-		return sum;
+		return 0;
 	}
 
 }

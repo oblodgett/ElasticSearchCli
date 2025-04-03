@@ -1,7 +1,7 @@
 package net.nilosplace.ElasticSearchCli.commands.cluster;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import co.elastic.clients.elasticsearch.nodes.NodesInfoResponse;
+import co.elastic.clients.elasticsearch.cat.NodesResponse;
 
 public class ClusterNodesCommand extends ClusterCommand {
 
@@ -9,7 +9,7 @@ public class ClusterNodesCommand extends ClusterCommand {
 	public void execute() {
 		ElasticsearchClient client = configHelper.getEsClient();
 		try {
-			NodesInfoResponse resp = client.nodes().info();
+			NodesResponse resp = client.cat().nodes();
 			System.out.println(resp);
 		} catch (Exception e) {
 			e.printStackTrace();

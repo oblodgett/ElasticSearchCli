@@ -17,7 +17,6 @@ public class ClusterInfoCommand extends ClusterCommand {
 		} catch (ElasticsearchException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
-			// e.printStackTrace();
 			System.err.println("Error: " + e.getMessage() + " Host: " + configHelper.getConfig().get("es.host") + ":" + configHelper.getConfig().get("es.port"));
 		}
 	}
