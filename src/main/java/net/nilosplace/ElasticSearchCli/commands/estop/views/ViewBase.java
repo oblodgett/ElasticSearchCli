@@ -32,7 +32,7 @@ public abstract class ViewBase {
 		this.manager = manager;
 	}
 
-	protected void drawHeaderAndFooter() throws IOException {
+	protected void drawHeaderAndFooter(String errorMessage) throws IOException {
 		width = screen.getTerminalSize().getColumns() - 1;
 		height = screen.getTerminalSize().getRows() - 1;
 
@@ -59,6 +59,9 @@ public abstract class ViewBase {
 		screen.newTextGraphics().setForegroundColor(clusterColor).setCharacter(0, height - 2, Symbols.DOUBLE_LINE_BOTTOM_LEFT_CORNER);
 		screen.newTextGraphics().drawLine(1, height - 2, width - 1, height - 2, new TextCharacter(Symbols.DOUBLE_LINE_HORIZONTAL).withForegroundColor(clusterColor));
 		screen.newTextGraphics().setForegroundColor(clusterColor).setCharacter(width, height - 2, Symbols.DOUBLE_LINE_BOTTOM_RIGHT_CORNER);
+		if (errorMessage != null) {
+			screen.newTextGraphics().putString(2, height - 1, "Error: " + errorMessage);
+		}
 
 		int count = 2;
 		count = printBox("Cluster: " + manager.getClusterName(), count);

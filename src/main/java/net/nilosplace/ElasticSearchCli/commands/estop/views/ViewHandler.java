@@ -26,6 +26,7 @@ public class ViewHandler extends Thread {
 	private IndexView indexView;
 	private OverView overView;
 	private ViewBase currentView;
+	private String errorMessage;
 
 	private Lock lock = new ReentrantLock();
 
@@ -48,7 +49,7 @@ public class ViewHandler extends Thread {
 			screen.startScreen();
 			currentView = overView;
 			currentView.draw(true);
-			currentView.drawHeaderAndFooter();
+			currentView.drawHeaderAndFooter(errorMessage);
 			boolean timeToQuit = false;
 			while (true) {
 				lock.lock();
@@ -61,7 +62,7 @@ public class ViewHandler extends Thread {
 				try {
 					if (dataUpdated || screenResized || screenChanged || viewChanged) {
 						currentView.draw(screenResized || screenChanged || viewChanged);
-						currentView.drawHeaderAndFooter();
+						currentView.drawHeaderAndFooter(errorMessage);
 						dataUpdated = screenResized = screenChanged = viewChanged = false;
 					}
 				} finally {
@@ -116,6 +117,7 @@ public class ViewHandler extends Thread {
 						}
 						case 'R', 'r' -> {
 							viewChanged = true;
+							errorMessage = null;
 						}
 						default -> {
 							System.out.println("Unknown key: " + keyStroke);
@@ -144,6 +146,15 @@ public class ViewHandler extends Thread {
 			}
 		}
 		return false;
+	}
+
+	public void setErrorMessage(String message) {
+		lock.lock();
+		try {
+			errorMessage = message;
+		} finally {
+			lock.unlock();
+		}
 	}
 
 }

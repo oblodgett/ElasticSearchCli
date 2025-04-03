@@ -48,13 +48,16 @@ public class ClusterDataPoller extends Thread {
 				manager.setIndicesStats(statsResp);
 				viewHandler.toggleDataUpdated();
 				Date end = new Date();
-				Thread.sleep((pollInterval * 1000) - (end.getTime() - start.getTime()));
+				long pause = (pollInterval * 1000) - (end.getTime() - start.getTime());
+				if (pause > 0) {
+					Thread.sleep(pause);
+				}
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				viewHandler.setErrorMessage(e.getMessage());
 			} catch (ElasticsearchException e) {
-				e.printStackTrace();
+				viewHandler.setErrorMessage(e.getMessage());
 			} catch (IOException e) {
-				e.printStackTrace();
+				viewHandler.setErrorMessage(e.getMessage());
 			}
 		}
 	}
