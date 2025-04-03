@@ -4,8 +4,10 @@ import java.awt.Point;
 import java.io.IOException;
 import java.util.Date;
 
+import com.googlecode.lanterna.TextColor.ANSI;
 import com.googlecode.lanterna.screen.Screen;
 
+import co.elastic.clients.elasticsearch.cat.nodes.NodesRecord;
 import net.nilosplace.ElasticSearchCli.commands.estop.ClusterDataManager;
 
 public class NodeView extends ViewBase {
@@ -22,6 +24,17 @@ public class NodeView extends ViewBase {
 		clusterColor = manager.getClusterColor();
 		screen.newTextGraphics().setBackgroundColor(clusterColor).setForegroundColor(black).putCSIStyledString(width - 30, 0, now.toString());
 
+		Point win = new Point(3, 5);
+		int col = 0;
+		for (NodesRecord nodesRecord : manager.getNodeRecords()) {
+			screen.newTextGraphics().setForegroundColor(ANSI.WHITE).putString(win.x + offset.x, col + win.y + offset.y, nodesRecord.master() + "  " + nodesRecord.name() + " (" + nodesRecord.ip() + ")");
+			col += 2;
+		}
+		/***
+		 * { "ip": "172.18.0.2", "heap.percent": "17", "ram.percent": "65", "cpu": "0",
+		 * "load_1m": "0.06", "load_5m": "0.03", "load_15m": "0.00", "node.role":
+		 * "cdfhilmrstw", "master": "*", "name": "es04" }
+		 */
 		screen.refresh();
 	}
 
