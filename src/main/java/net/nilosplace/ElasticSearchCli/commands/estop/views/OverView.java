@@ -10,37 +10,36 @@ import net.nilosplace.ElasticSearchCli.commands.estop.ClusterDataManager;
 
 public class OverView extends ViewBase {
 
-	private ClusterDataManager manager;
 	private boolean indexesThanNodes;
 
-	public OverView(ClusterDataManager manager) {
-		this.manager = manager;
+	public OverView(Screen screen, ClusterDataManager manager) {
+		super(screen, manager);
+		header = "Cluster Overview";
+		setFooter();
 	}
 
-	public void toggleIndexesNodes() {
-		indexesThanNodes = !indexesThanNodes;
-	}
-
-	@Override
-	public void draw(Screen screen, Point offset) throws IOException {
-		Date now = new Date();
-		clusterColor = manager.getClusterColor();
-		screen.newTextGraphics().setBackgroundColor(clusterColor).setForegroundColor(black).putCSIStyledString(width - 30, 0, now.toString());
-
-		screen.refresh();
-	}
-
-	@Override
-	public void fullDraw(Screen screen, Point offset) throws IOException {
-		String footer = "Quit: Q  Overview: O  Index View: I  Node View: N  ";
+	public void setFooter() {
+		footer = "Quit: Q  Overview: O  Index View: I  Node View: N  ";
 		if (indexesThanNodes) {
 			footer += "Switch Indexes/Nodes: S";
 		} else {
 			footer += "Switch Nodes/Indexes: S";
 		}
 		footer += "  Refresh: R";
-		drawHeaderAndFooter(screen, offset, manager, "Cluster Overview", footer);
-		draw(screen, offset);
+	}
+
+	public void toggleIndexesNodes() {
+		indexesThanNodes = !indexesThanNodes;
+		setFooter();
+	}
+
+	@Override
+	public void draw(boolean clear) throws IOException {
+		if (clear) {
+			screen.clear();
+		}
+
+		screen.refresh();
 	}
 
 }

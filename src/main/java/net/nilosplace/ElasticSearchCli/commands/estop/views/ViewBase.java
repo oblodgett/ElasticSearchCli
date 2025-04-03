@@ -2,6 +2,7 @@ package net.nilosplace.ElasticSearchCli.commands.estop.views;
 
 import java.awt.Point;
 import java.io.IOException;
+import java.util.Date;
 
 import com.googlecode.lanterna.Symbols;
 import com.googlecode.lanterna.TextCharacter;
@@ -12,24 +13,31 @@ import com.googlecode.lanterna.screen.Screen;
 import net.nilosplace.ElasticSearchCli.commands.estop.ClusterDataManager;
 
 public abstract class ViewBase {
-	public abstract void draw(Screen screen, Point offset) throws IOException;
-
-	public abstract void fullDraw(Screen screen, Point offset) throws IOException;
+	public abstract void draw(boolean clear) throws IOException;
 
 	protected int width;
 	protected int height;
 	protected TextColor black = ANSI.BLACK;
 	protected TextColor clusterColor = ANSI.GREEN_BRIGHT;
 	protected TextCharacter space = new TextCharacter(' ');
+	protected Point win = new Point(3, 4);
+	protected Point offset = new Point(0, 0);
+	protected Screen screen;
+	protected ClusterDataManager manager;
+	protected String header = "";
+	protected String footer = "";
 
-	protected void drawHeaderAndFooter(Screen screen, Point offset, ClusterDataManager manager, String header, String footer) throws IOException {
+	public ViewBase(Screen screen, ClusterDataManager manager) {
+		this.screen = screen;
+		this.manager = manager;
+	}
+
+	protected void drawHeaderAndFooter() throws IOException {
 		width = screen.getTerminalSize().getColumns() - 1;
 		height = screen.getTerminalSize().getRows() - 1;
 
 		screen.setCursorPosition(null);
 		TextColor clusterColor = manager.getClusterColor();
-
-		screen.clear();
 
 		screen.newTextGraphics().drawLine(0, 0, width, 0, space.withBackgroundColor(clusterColor).withForegroundColor(black));
 		screen.newTextGraphics().drawLine(0, height, width, height, space.withBackgroundColor(clusterColor).withForegroundColor(black));
@@ -53,24 +61,35 @@ public abstract class ViewBase {
 		screen.newTextGraphics().setForegroundColor(clusterColor).setCharacter(width, height - 2, Symbols.DOUBLE_LINE_BOTTOM_RIGHT_CORNER);
 
 		int count = 2;
-		count = printBox(screen, "Cluster: " + manager.getClusterName(), count);
-		count = printBox(screen, "Nodes: " + manager.getNodeTotal(), count);
-		count = printBox(screen, "Indices: " + manager.getIndicesTotal(), count);
-		count = printBox(screen, "Shards: " + manager.getShardsTotal(), count);
-		count = printBox(screen, "Docs: " + manager.getCountTotal(), count);
-		count = printBox(screen, "Total Size: " + manager.getTotalSize(), count);
+		count = printBox("Cluster: " + manager.getClusterName(), count);
+		count = printBox("Nodes: " + manager.getNodeTotal(), count);
+		count = printBox("Indices: " + manager.getIndicesTotal(), count);
+		count = printBox("Shards: " + manager.getShardsTotal(), count);
+		count = printBox("Docs: " + manager.getCountTotal(), count);
+		count = printBox("Total Size: " + manager.getTotalSize(), count);
+
+		Date now = new Date();
+		screen.newTextGraphics().setBackgroundColor(clusterColor).setForegroundColor(black).putCSIStyledString(width - 30, 0, now.toString());
 
 		screen.refresh();
 	}
 
-	private int printBox(Screen screen, String data, int count) {
-		screen.newTextGraphics().setForegroundColor(clusterColor).putString(count, 2, data);
+	private int printBox(String data, int count) {
+		screen.newTextGraphics().setForegroundColor(ANSI.WHITE).putString(count, 2, data);
 		count += data.length();
 		screen.newTextGraphics().setForegroundColor(clusterColor).setCharacter(count + 1, 1, Symbols.DOUBLE_LINE_T_DOWN);
 		screen.newTextGraphics().setForegroundColor(clusterColor).setCharacter(count + 1, 2, Symbols.DOUBLE_LINE_VERTICAL);
 		screen.newTextGraphics().setForegroundColor(clusterColor).setCharacter(count + 1, 3, Symbols.DOUBLE_LINE_T_UP);
 		count += 3;
 		return count;
+	}
+
+	public void printText(int x, int y, String text) {
+		screen.newTextGraphics().setForegroundColor(ANSI.WHITE).putString(x + win.x + offset.x, y + win.y + offset.y, text);
+	}
+
+	protected void updateOffset(int x, int y) {
+		offset.setLocation(offset.getX() + x, offset.getY() + y);
 	}
 
 }

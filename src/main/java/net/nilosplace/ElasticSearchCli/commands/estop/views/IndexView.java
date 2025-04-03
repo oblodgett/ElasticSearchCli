@@ -10,26 +10,19 @@ import net.nilosplace.ElasticSearchCli.commands.estop.ClusterDataManager;
 
 public class IndexView extends ViewBase {
 
-	private ClusterDataManager manager;
-
-	public IndexView(ClusterDataManager manager) {
-		this.manager = manager;
+	public IndexView(Screen screen, ClusterDataManager manager) {
+		super(screen, manager);
+		header = "Index View";
+		footer = "Quit: Q  Overview: O  Index View: I  Node View: N";
 	}
 
 	@Override
-	public void draw(Screen screen, Point offset) throws IOException {
-		Date now = new Date();
-		clusterColor = manager.getClusterColor();
-		screen.newTextGraphics().setBackgroundColor(clusterColor).setForegroundColor(black).putCSIStyledString(width - 30, 0, now.toString());
+	public void draw(boolean clear) throws IOException {
+		if (clear) {
+			screen.clear();
+		}
 
 		screen.refresh();
-	}
-
-	@Override
-	public void fullDraw(Screen screen, Point offset) throws IOException {
-		String footer = "Quit: Q  Overview: O  Index View: I  Node View: N";
-		drawHeaderAndFooter(screen, offset, manager, "Index View", footer);
-		draw(screen, offset);
 	}
 
 }

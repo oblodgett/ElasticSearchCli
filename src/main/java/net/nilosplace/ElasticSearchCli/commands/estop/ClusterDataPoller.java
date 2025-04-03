@@ -8,9 +8,11 @@ import co.elastic.clients.elasticsearch._types.ElasticsearchException;
 import co.elastic.clients.elasticsearch.cat.CountResponse;
 import co.elastic.clients.elasticsearch.cat.HealthResponse;
 import co.elastic.clients.elasticsearch.cat.IndicesResponse;
+import co.elastic.clients.elasticsearch.cat.NodesRequest;
 import co.elastic.clients.elasticsearch.cat.NodesResponse;
 import co.elastic.clients.elasticsearch.cat.ShardsResponse;
 import co.elastic.clients.elasticsearch.indices.stats.IndicesStats;
+import net.nilosplace.ElasticSearchCli.commands.estop.views.ViewHandler;
 import net.nilosplace.ElasticSearchCli.utils.ConfigHelper;
 
 public class ClusterDataPoller extends Thread {
@@ -19,8 +21,10 @@ public class ClusterDataPoller extends Thread {
 	private ClusterDataManager manager;
 	private int pollInterval = 10;
 	private ElasticsearchClient client;
+	private ViewHandler viewHandler;
 
-	public ClusterDataPoller(ClusterDataManager manager, int pollInterval) {
+	public ClusterDataPoller(ViewHandler viewHandler, ClusterDataManager manager, int pollInterval) {
+		this.viewHandler = viewHandler;
 		this.manager = manager;
 		this.pollInterval = pollInterval;
 		client = configHelper.getEsClient();
@@ -42,6 +46,7 @@ public class ClusterDataPoller extends Thread {
 				manager.setCountRecords(countResp.valueBody());
 				IndicesStats statsResp = client.indices().stats().all();
 				manager.setIndicesStats(statsResp);
+				viewHandler.toggleDataUpdated();
 				Date end = new Date();
 				Thread.sleep((pollInterval * 1000) - (end.getTime() - start.getTime()));
 			} catch (InterruptedException e) {
@@ -49,11 +54,6 @@ public class ClusterDataPoller extends Thread {
 			} catch (ElasticsearchException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			try {
-				Thread.sleep(pollInterval * 1000);
-			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}

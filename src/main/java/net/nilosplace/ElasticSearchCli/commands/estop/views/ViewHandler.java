@@ -2,6 +2,8 @@ package net.nilosplace.ElasticSearchCli.commands.estop.views;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.input.KeyStroke;
@@ -18,16 +20,25 @@ public class ViewHandler extends Thread {
 
 	private Screen screen;
 	private ClusterDataManager manager = new ClusterDataManager();
-	private ClusterDataPoller poller = new ClusterDataPoller(manager, 10);
+	private ClusterDataPoller poller = new ClusterDataPoller(this, manager, 10);
 
-	private NodeView nodeView = new NodeView(manager);
-	private IndexView indexView = new IndexView(manager);
-	private OverView overView = new OverView(manager);
+	private NodeView nodeView;
+	private IndexView indexView;
+	private OverView overView;
 	private ViewBase currentView;
-	private Point offset = new Point();
+
+	private Lock lock = new ReentrantLock();
+
+	private boolean dataUpdated = false;
+	private boolean screenResized = false;
+	private boolean viewChanged = false;
+	private boolean screenChanged = false;
 
 	public ViewHandler(Screen screen) {
 		this.screen = screen;
+		nodeView = new NodeView(screen, manager);
+		indexView = new IndexView(screen, manager);
+		overView = new OverView(screen, manager);
 	}
 
 	public void show() {
@@ -36,29 +47,45 @@ public class ViewHandler extends Thread {
 		try {
 			screen.startScreen();
 			currentView = overView;
-			currentView.fullDraw(screen, offset);
-			Date lastDraw = null;
+			currentView.draw(true);
+			currentView.drawHeaderAndFooter();
+			boolean timeToQuit = false;
 			while (true) {
-				if (handleKeyStroke()) {
+				lock.lock();
+				timeToQuit = handleKeyStroke();
+				if (timeToQuit) {
+					lock.unlock();
 					break;
 				}
-				TerminalSize newSize = screen.doResizeIfNecessary();
-				if (newSize != null) {
-					currentView.fullDraw(screen, offset);
+				screenResized = screen.doResizeIfNecessary() != null;
+				try {
+					if (dataUpdated || screenResized || screenChanged || viewChanged) {
+						currentView.draw(screenResized || screenChanged || viewChanged);
+						currentView.drawHeaderAndFooter();
+						dataUpdated = screenResized = screenChanged = viewChanged = false;
+					}
+				} finally {
+					lock.unlock();
 				}
 				Thread.sleep(20);
-				Date now = new Date();
-				if (lastDraw == null || now.getTime() - lastDraw.getTime() > 2000) {
-					currentView.draw(screen, offset);
-					lastDraw = now;
-				}
 			}
 			screen.stopScreen();
 
-		} catch (IOException e) {
+		} catch (
+
+		IOException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
+		}
+	}
+
+	public void toggleDataUpdated() {
+		lock.lock();
+		try {
+			dataUpdated = true;
+		} finally {
+			lock.unlock();
 		}
 	}
 
@@ -73,46 +100,46 @@ public class ViewHandler extends Thread {
 						}
 						case 'O', 'o' -> {
 							currentView = overView;
-							currentView.fullDraw(screen, offset);
+							viewChanged = true;
 						}
 						case 'N', 'n' -> {
 							currentView = nodeView;
-							currentView.fullDraw(screen, offset);
+							viewChanged = true;
 						}
 						case 'I', 'i' -> {
 							currentView = indexView;
-							currentView.fullDraw(screen, offset);
+							viewChanged = true;
 						}
 						case 'S', 's' -> {
 							overView.toggleIndexesNodes();
-							currentView.fullDraw(screen, offset);
+							viewChanged = true;
 						}
 						case 'R', 'r' -> {
-							currentView.fullDraw(screen, offset);
+							viewChanged = true;
 						}
 						default -> {
-							System.out.println(keyStroke);
+							System.out.println("Unknown key: " + keyStroke);
 						}
 					}
 				}
 				case KeyType.ArrowUp -> {
-					if (offset.getY() > 0) {
-						offset.setLocation(offset.getX(), offset.getY() - 1);
-					}
+					currentView.updateOffset(0, -1);
+					screenChanged = true;
 				}
 				case KeyType.ArrowDown -> {
-					offset.setLocation(offset.getX(), offset.getY() + 1);
+					currentView.updateOffset(0, 1);
+					screenChanged = true;
 				}
 				case KeyType.ArrowLeft -> {
-					if (offset.getX() > 0) {
-						offset.setLocation(offset.getX() - 1, offset.getY());
-					}
+					currentView.updateOffset(-1, 0);
+					screenChanged = true;
 				}
 				case KeyType.ArrowRight -> {
-					offset.setLocation(offset.getX() + 1, offset.getY());
+					currentView.updateOffset(1, 0);
+					screenChanged = true;
 				}
 				default -> {
-					System.out.println(keyStroke);
+					System.out.println("Unknown key: " + keyStroke);
 				}
 			}
 		}
