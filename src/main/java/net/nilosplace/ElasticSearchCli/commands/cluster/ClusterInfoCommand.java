@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.ElasticsearchException;
+import co.elastic.clients.elasticsearch.cluster.HealthResponse;
 import co.elastic.clients.elasticsearch.core.InfoResponse;
 
 public class ClusterInfoCommand extends ClusterCommand {
@@ -12,7 +13,7 @@ public class ClusterInfoCommand extends ClusterCommand {
 	public void execute() {
 		ElasticsearchClient client = configHelper.getEsClient();
 		try {
-			InfoResponse resp = client.info();
+			HealthResponse resp = client.cluster().health();
 			System.out.println(resp);
 		} catch (ElasticsearchException e) {
 			e.printStackTrace();

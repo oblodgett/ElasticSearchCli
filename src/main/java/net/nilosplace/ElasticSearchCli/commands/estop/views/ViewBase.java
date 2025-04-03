@@ -37,7 +37,7 @@ public abstract class ViewBase {
 		height = screen.getTerminalSize().getRows() - 1;
 
 		screen.setCursorPosition(null);
-		TextColor clusterColor = manager.getClusterColor();
+		clusterColor = manager.getClusterColor();
 
 		screen.newTextGraphics().drawLine(0, 0, width, 0, space.withBackgroundColor(clusterColor).withForegroundColor(black));
 		screen.newTextGraphics().drawLine(0, height, width, height, space.withBackgroundColor(clusterColor).withForegroundColor(black));
@@ -64,6 +64,7 @@ public abstract class ViewBase {
 		}
 
 		int count = 2;
+		screen.newTextGraphics().drawLine(2, 2, width - 2, 2, space.withBackgroundColor(black).withForegroundColor(black));
 		count = printBox("Cluster: " + manager.getClusterName(), count);
 		count = printBox("Nodes: " + manager.getNodeTotal(), count);
 		count = printBox("Indices: " + manager.getIndicesTotal(), count);
@@ -85,6 +86,11 @@ public abstract class ViewBase {
 		screen.newTextGraphics().setForegroundColor(clusterColor).setCharacter(count + 1, 3, Symbols.DOUBLE_LINE_T_UP);
 		count += 3;
 		return count;
+	}
+
+	public void clearLine(int y) {
+		int ny = y + win.y + offset.y;
+		screen.newTextGraphics().drawLine(2, ny, width - 2, ny, space.withBackgroundColor(black).withForegroundColor(black));
 	}
 
 	public void printText(int x, int y, String text) {

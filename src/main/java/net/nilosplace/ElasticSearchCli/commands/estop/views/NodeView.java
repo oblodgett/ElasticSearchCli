@@ -10,6 +10,7 @@ import com.googlecode.lanterna.screen.Screen;
 
 import co.elastic.clients.elasticsearch.cat.nodes.NodesRecord;
 import net.nilosplace.ElasticSearchCli.commands.estop.ClusterDataManager;
+import net.nilosplace.ElasticSearchCli.commands.estop.model.NodeInfo;
 
 public class NodeView extends ViewBase {
 
@@ -25,63 +26,57 @@ public class NodeView extends ViewBase {
 			screen.clear();
 		}
 
-		int[] columns = new int[5];
-		String[][] values = new String[5][manager.getNodeRecords().size() + 1];
+		int colCount = 10;
+		int[] columns = new int[colCount];
+		String[][] values = new String[colCount][manager.getNodeTotal() + 1];
 
 		values[0][0] = "M";
-		columns[0] = values[0][0].length();
 		values[1][0] = "Name";
-		columns[1] = values[1][0].length();
+		// values[2][0] = "Version";
 		values[2][0] = "IP";
-		columns[2] = values[2][0].length();
 		values[3][0] = "Heap Usage";
-		columns[3] = values[3][0].length();
 		values[4][0] = "Disk Usage";
-		columns[4] = values[4][0].length();
+		values[5][0] = "CPU%";
+		values[6][0] = "1m";
+		values[7][0] = "5m";
+		values[8][0] = "15m";
+		values[9][0] = "Uptime";
+
+		for (int i = 0; i < colCount; i++) {
+			columns[i] = values[i][0].length();
+		}
 
 		int c = 0;
-		for (NodesRecord nodesRecord : manager.getNodeRecords()) {
+		for (NodeInfo nodeInfo : manager.getNodeInfos()) {
 			c++;
-			if (nodesRecord.master().length() > columns[0]) {
-				columns[0] = nodesRecord.master().length();
-			}
-			values[0][c] = nodesRecord.master();
+			values[0][c] = nodeInfo.isMaster() ? "*" : "-";
+			values[1][c] = nodeInfo.getName();
+			// values[2][c] = nodeInfo.getVersion();
+			values[2][c] = nodeInfo.getIp();
+			values[3][c] = nodeInfo.getHeap();
+			values[4][c] = nodeInfo.getDisk();
+			values[5][c] = nodeInfo.getCpuPercent() + "%";
+			values[6][c] = nodeInfo.getLoadAverage().get("1m") + "";
+			values[7][c] = nodeInfo.getLoadAverage().get("5m") + "";
+			values[8][c] = nodeInfo.getLoadAverage().get("15m") + "";
+			values[9][c] = nodeInfo.getUptime();
 
-			if (nodesRecord.name().length() > columns[1]) {
-				columns[1] = nodesRecord.name().length();
+			for (int i = 0; i < colCount; i++) {
+				if (values[i][c].length() > columns[i]) {
+					columns[i] = values[i][c].length();
+				}
 			}
-			values[1][c] = nodesRecord.name();
-
-			if (nodesRecord.ip().length() > columns[2]) {
-				columns[2] = nodesRecord.ip().length();
-			}
-			values[2][c] = nodesRecord.ip();
-
-			String heap = nodesRecord.heapCurrent() + " / " + nodesRecord.heapMax() + " = " + nodesRecord.heapPercent() + "%";
-			if (heap.length() > columns[3]) {
-				columns[3] = heap.length();
-			}
-			values[3][c] = heap;
-
-			String disk = nodesRecord.diskAvail() + " / " + nodesRecord.diskTotal() + " = " + nodesRecord.diskUsedPercent() + "%";
-			if (disk.length() > columns[4]) {
-				columns[4] = disk.length();
-			}
-			values[4][c] = disk;
 		}
 
 		for (int i = 0; i <= c; i++) {
 			int colStart = 0;
+			clearLine(i * 2);
 			for (int k = 0; k < columns.length; k++) {
 				printText(colStart, i * 2, values[k][i]);
 				colStart += (columns[k] + 2);
 			}
 		}
 
-		/***
-		 * { "heap.percent": "17", "ram.percent": "65", "cpu": "0", "load_1m": "0.06",
-		 * "load_5m": "0.03", "load_15m": "0.00", "node.role": "cdfhilmrstw", }
-		 */
 		screen.refresh();
 	}
 

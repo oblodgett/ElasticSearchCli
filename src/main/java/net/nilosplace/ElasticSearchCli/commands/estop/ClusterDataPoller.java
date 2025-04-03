@@ -5,13 +5,6 @@ import java.util.Date;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.ElasticsearchException;
-import co.elastic.clients.elasticsearch.cat.CountResponse;
-import co.elastic.clients.elasticsearch.cat.HealthResponse;
-import co.elastic.clients.elasticsearch.cat.IndicesResponse;
-import co.elastic.clients.elasticsearch.cat.NodesRequest;
-import co.elastic.clients.elasticsearch.cat.NodesResponse;
-import co.elastic.clients.elasticsearch.cat.ShardsResponse;
-import co.elastic.clients.elasticsearch.indices.stats.IndicesStats;
 import net.nilosplace.ElasticSearchCli.commands.estop.views.ViewHandler;
 import net.nilosplace.ElasticSearchCli.utils.ConfigHelper;
 
@@ -34,18 +27,9 @@ public class ClusterDataPoller extends Thread {
 		while (true) {
 			try {
 				Date start = new Date();
-				NodesResponse nodeResp = client.cat().nodes();
-				manager.setNodeRecords(nodeResp.valueBody());
-				IndicesResponse indexResp = client.cat().indices();
-				manager.setIndicesRecords(indexResp.valueBody());
-				HealthResponse healthResp = client.cat().health();
-				manager.setHealthRecords(healthResp.valueBody());
-				ShardsResponse shardsResp = client.cat().shards();
-				manager.setShardRecords(shardsResp.valueBody());
-				CountResponse countResp = client.cat().count();
-				manager.setCountRecords(countResp.valueBody());
-				IndicesStats statsResp = client.indices().stats().all();
-				manager.setIndicesStats(statsResp);
+				manager.setHealthResp(client.cluster().health());
+				manager.setNodesStatsResp(client.nodes().stats());
+				manager.setIndicesStatsResp(client.indices().stats());
 				viewHandler.toggleDataUpdated();
 				Date end = new Date();
 				long pause = (pollInterval * 1000) - (end.getTime() - start.getTime());
@@ -54,6 +38,7 @@ public class ClusterDataPoller extends Thread {
 				}
 			} catch (InterruptedException e) {
 				viewHandler.setErrorMessage(e.getMessage());
+				break;
 			} catch (ElasticsearchException e) {
 				viewHandler.setErrorMessage(e.getMessage());
 			} catch (IOException e) {

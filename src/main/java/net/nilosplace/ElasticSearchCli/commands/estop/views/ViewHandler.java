@@ -72,13 +72,13 @@ public class ViewHandler extends Thread {
 			}
 			screen.stopScreen();
 
-		} catch (
-
-		IOException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+
+		poller.interrupt();
 	}
 
 	public void toggleDataUpdated() {
