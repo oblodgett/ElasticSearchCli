@@ -1,13 +1,15 @@
 package net.nilosplace.ElasticSearchCli.commands.cluster;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.File;
 import java.util.ArrayList;
 
 import com.github.javafaker.Faker;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.ElasticsearchException;
-import co.elastic.clients.elasticsearch.core.IndexRequest;
 import lombok.Data;
 import net.nilosplace.process_display.ProcessDisplayHelper;
 
@@ -30,10 +32,16 @@ public class ClusterGenerateDataCommand extends ClusterCommand {
 		int docsPerThread = Integer.parseInt(docAmount) / Integer.parseInt(threadCount);
 
 		ph.startProcess("Document Loading", Integer.parseInt(docAmount));
+		BufferedReader reader;
+		try {
+			reader = new BufferedReader(new FileReader(new File("/Volumes/BigDisk34/text_output2.txt")));
+		} catch (Exception e) {
+			return;
+		}
 
 		ArrayList<Thread> threads = new ArrayList<>();
 		for (int i = 0; i < Integer.parseInt(threadCount); i++) {
-			ThreadWorker worker = new ThreadWorker(docsPerThread);
+			ThreadWorker worker = new ThreadWorker(reader, docsPerThread);
 			threads.add(worker);
 			worker.start();
 		}
@@ -53,8 +61,10 @@ public class ClusterGenerateDataCommand extends ClusterCommand {
 	public class ThreadWorker extends Thread {
 		private Faker faker = new Faker();
 		private int docsPerThread;
+		private BufferedReader reader;
 
-		public ThreadWorker(int docsPerThread) {
+		public ThreadWorker(BufferedReader reader, int docsPerThread) {
+			this.reader = reader;
 			this.docsPerThread = docsPerThread;
 		}
 
@@ -62,7 +72,7 @@ public class ClusterGenerateDataCommand extends ClusterCommand {
 		public void run() {
 			while (docsPerThread > 0) {
 				try {
-					PersonDocument doc = new PersonDocument(faker);
+					PersonDocument doc = new PersonDocument(reader, faker);
 					client.index(i -> i.index("test").document(doc));
 					ph.progressProcess();
 				} catch (ElasticsearchException | IOException e) {
@@ -80,16 +90,30 @@ public class ClusterGenerateDataCommand extends ClusterCommand {
 		private String firstname;
 		private String lastName;
 		private String displayName;
+		private String document1;
+		private String document2;
+		private String document3;
+		private String document4;
+		private String document5;
 		private PersonAddressDocument mailAddress;
 		private PersonAddressDocument shippingAddress;
 		private PersonAddressDocument billingAddress;
 
-		public PersonDocument(Faker faker) {
+		public PersonDocument(BufferedReader reader, Faker faker) {
 			this.id = faker.idNumber().valid();
 			this.prefix = faker.name().prefix();
 			this.firstname = faker.name().firstName();
 			this.lastName = faker.name().lastName();
 			this.displayName = faker.name().name();
+			try {
+				this.document1 = reader.readLine();
+				this.document2 = reader.readLine();
+				this.document3 = reader.readLine();
+				this.document4 = reader.readLine();
+				this.document5 = reader.readLine();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 			this.mailAddress = new PersonAddressDocument(faker);
 			this.shippingAddress = new PersonAddressDocument(faker);
 			this.billingAddress = new PersonAddressDocument(faker);

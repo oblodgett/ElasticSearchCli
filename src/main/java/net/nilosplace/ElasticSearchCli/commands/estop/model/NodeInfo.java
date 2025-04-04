@@ -7,6 +7,7 @@ import lombok.Data;
 @Data
 public class NodeInfo {
 
+	private String id;
 	private boolean master;
 	private String name;
 	private String version;

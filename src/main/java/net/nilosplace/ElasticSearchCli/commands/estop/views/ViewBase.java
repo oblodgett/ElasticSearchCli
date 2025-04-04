@@ -26,6 +26,7 @@ public abstract class ViewBase {
 	protected ClusterDataManager manager;
 	protected String header = "";
 	protected String footer = "";
+	protected String defaultFooter = "Quit: Q  Refresh: R";
 
 	public ViewBase(Screen screen, ClusterDataManager manager) {
 		this.screen = screen;
@@ -43,7 +44,7 @@ public abstract class ViewBase {
 		screen.newTextGraphics().drawLine(0, height, width, height, space.withBackgroundColor(clusterColor).withForegroundColor(black));
 		screen.newTextGraphics().setBackgroundColor(clusterColor).setForegroundColor(black).putCSIStyledString(2, 0, header + ": " + manager.getClusterName());
 		screen.newTextGraphics().setBackgroundColor(clusterColor).setForegroundColor(black).putCSIStyledString((width / 2) - (offset.toString().length() / 2), 0, offset.toString());
-		screen.newTextGraphics().setBackgroundColor(clusterColor).setForegroundColor(black).putCSIStyledString(2, height, footer);
+		screen.newTextGraphics().setBackgroundColor(clusterColor).setForegroundColor(black).putCSIStyledString(2, height, defaultFooter + "  " + footer);
 		screen.newTextGraphics().setForegroundColor(clusterColor).setCharacter(0, 1, Symbols.DOUBLE_LINE_TOP_LEFT_CORNER);
 		screen.newTextGraphics().drawLine(1, 1, width - 1, 1, new TextCharacter(Symbols.DOUBLE_LINE_HORIZONTAL).withForegroundColor(clusterColor));
 		screen.newTextGraphics().setForegroundColor(clusterColor).setCharacter(width, 1, Symbols.DOUBLE_LINE_TOP_RIGHT_CORNER);

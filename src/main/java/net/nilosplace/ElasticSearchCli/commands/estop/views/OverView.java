@@ -19,13 +19,12 @@ public class OverView extends ViewBase {
 	}
 
 	public void setFooter() {
-		footer = "Quit: Q  Overview: O  Index View: I  Node View: N  ";
+		footer = "Overview: O  Index View: I  Node View: N  Tasks View: T  ";
 		if (indexesThanNodes) {
 			footer += "Switch Indexes/Nodes: S";
 		} else {
 			footer += "Switch Nodes/Indexes: S";
 		}
-		footer += "  Refresh: R";
 	}
 
 	public void toggleIndexesNodes() {

@@ -10,11 +10,15 @@ import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.TextColor.ANSI;
 
 import co.elastic.clients.elasticsearch._types.HealthStatus;
+import co.elastic.clients.elasticsearch.cat.MasterResponse;
+import co.elastic.clients.elasticsearch.cat.TasksResponse;
 import co.elastic.clients.elasticsearch.cluster.HealthResponse;
 import co.elastic.clients.elasticsearch.indices.IndicesStatsResponse;
+import co.elastic.clients.elasticsearch.indices.stats.IndicesStats;
 import co.elastic.clients.elasticsearch.nodes.NodesStatsResponse;
 import co.elastic.clients.elasticsearch.nodes.Stats;
 import lombok.Data;
+import net.nilosplace.ElasticSearchCli.commands.estop.model.IndexInfo;
 import net.nilosplace.ElasticSearchCli.commands.estop.model.NodeInfo;
 
 @Data
@@ -22,8 +26,11 @@ public class ClusterDataManager {
 	private IndicesStatsResponse indicesStatsResp;
 	private NodesStatsResponse nodesStatsResp;
 	private HealthResponse healthResp;
+	private MasterResponse masterResp;
+	private TasksResponse tasksResp;
 
 	private List<NodeInfo> nodeInfos = new ArrayList<>();
+	private List<IndexInfo> indexInfos = new ArrayList<>();
 
 	public void setNodesStatsResp(NodesStatsResponse nodesStatsResp) {
 		this.nodesStatsResp = nodesStatsResp;
@@ -31,17 +38,40 @@ public class ClusterDataManager {
 		for (Entry<String, Stats> entry : nodesStatsResp.nodes().entrySet()) {
 			NodeInfo info = new NodeInfo();
 			Stats stats = entry.getValue();
+			info.setId(entry.getKey());
 			info.setName(stats.name());
+			if (masterResp != null) {
+				if (masterResp.valueBody().get(0).node().equals(stats.name())) {
+					info.setMaster(true);
+				}
+			}
 			// info.setVersion(stats.v);
 			info.setIp(stats.host());
 			info.setHeap(stats.jvm().mem().heapUsedPercent() + "% = " + formatBytes(stats.jvm().mem().heapUsedInBytes()) + "/" + formatBytes(stats.jvm().mem().heapMaxInBytes()));
-			info.setDisk((int) (100 * stats.fs().total().availableInBytes() / stats.fs().total().totalInBytes()) + "% = " + formatBytes(stats.fs().total().availableInBytes()) + "/" + formatBytes(stats.fs().total().totalInBytes()));
+			info.setDisk((int) (100.0 * (1.0 - ((double) stats.fs().total().availableInBytes() / (double) stats.fs().total().totalInBytes()))) + "% = " + formatBytes(stats.fs().total().availableInBytes()) + "/" + formatBytes(stats.fs().total().totalInBytes()));
 			info.setCpuPercent(stats.os().cpu().percent());
 			info.setLoadAverage(stats.os().cpu().loadAverage());
 			String uptime = DurationFormatUtils.formatDuration(stats.jvm().uptimeInMillis(), "dd:HH:mm:ss", true);
 			info.setUptime(uptime);
 
 			nodeInfos.add(info);
+		}
+	}
+
+	public void setIndicesStatsResp(IndicesStatsResponse indicesStatsResp) {
+		this.indicesStatsResp = indicesStatsResp;
+		indexInfos.clear();
+		for (Entry<String, IndicesStats> entry : indicesStatsResp.indices().entrySet()) {
+			IndexInfo info = new IndexInfo();
+			IndicesStats stats = entry.getValue();
+			info.setId(stats.uuid());
+			info.setName(entry.getKey());
+			info.setSize(stats.total().store().sizeInBytes());
+			info.setDocCount(stats.total().docs().count());
+			info.setPrimaryShardCount(stats.primaries().shardStats().totalCount());
+			info.setTotalShardCount(stats.total().shardStats().totalCount());
+			info.setTotalSegmentCount(stats.total().segments().count());
+			indexInfos.add(info);
 		}
 	}
 

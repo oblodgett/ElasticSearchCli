@@ -17,7 +17,7 @@ public class NodeView extends ViewBase {
 	public NodeView(Screen screen, ClusterDataManager manager) {
 		super(screen, manager);
 		header = "Node View";
-		footer = "Quit: Q  Overview: O  Index View: I  Node View: N  Refresh: R";
+		footer = "Overview: O  Index View: I  Node View: N  Tasks View: T";
 	}
 
 	@Override
@@ -34,12 +34,12 @@ public class NodeView extends ViewBase {
 		values[1][0] = "Name";
 		// values[2][0] = "Version";
 		values[2][0] = "IP";
-		values[3][0] = "Heap Usage";
-		values[4][0] = "Disk Usage";
-		values[5][0] = "CPU%";
-		values[6][0] = "1m";
-		values[7][0] = "5m";
-		values[8][0] = "15m";
+		values[3][0] = "CPU%";
+		values[4][0] = "1m";
+		values[5][0] = "5m";
+		values[6][0] = "15m";
+		values[7][0] = "Heap Usage";
+		values[8][0] = "Disk Usage";
 		values[9][0] = "Uptime";
 
 		for (int i = 0; i < colCount; i++) {
@@ -53,12 +53,12 @@ public class NodeView extends ViewBase {
 			values[1][c] = nodeInfo.getName();
 			// values[2][c] = nodeInfo.getVersion();
 			values[2][c] = nodeInfo.getIp();
-			values[3][c] = nodeInfo.getHeap();
-			values[4][c] = nodeInfo.getDisk();
-			values[5][c] = nodeInfo.getCpuPercent() + "%";
-			values[6][c] = nodeInfo.getLoadAverage().get("1m") + "";
-			values[7][c] = nodeInfo.getLoadAverage().get("5m") + "";
-			values[8][c] = nodeInfo.getLoadAverage().get("15m") + "";
+			values[3][c] = nodeInfo.getCpuPercent() + "%";
+			values[4][c] = nodeInfo.getLoadAverage().get("1m") + "";
+			values[5][c] = nodeInfo.getLoadAverage().get("5m") + "";
+			values[6][c] = nodeInfo.getLoadAverage().get("15m") + "";
+			values[7][c] = nodeInfo.getHeap();
+			values[8][c] = nodeInfo.getDisk();
 			values[9][c] = nodeInfo.getUptime();
 
 			for (int i = 0; i < colCount; i++) {
