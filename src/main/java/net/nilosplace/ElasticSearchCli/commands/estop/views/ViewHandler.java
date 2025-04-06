@@ -63,7 +63,7 @@ public class ViewHandler extends Thread {
 				screenResized = screen.doResizeIfNecessary() != null;
 				try {
 					if (dataUpdated || screenResized || screenChanged || viewChanged) {
-						currentView.draw(screenResized || screenChanged || viewChanged);
+						currentView.draw(dataUpdated || screenResized || screenChanged || viewChanged);
 						currentView.drawHeaderAndFooter(errorMessage);
 						dataUpdated = screenResized = screenChanged = viewChanged = false;
 					}

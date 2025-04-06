@@ -1,7 +1,9 @@
 package net.nilosplace.ElasticSearchCli.commands.estop;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang3.time.DurationFormatUtils;
@@ -12,6 +14,7 @@ import com.googlecode.lanterna.TextColor.ANSI;
 import co.elastic.clients.elasticsearch._types.HealthStatus;
 import co.elastic.clients.elasticsearch.cat.MasterResponse;
 import co.elastic.clients.elasticsearch.cat.TasksResponse;
+import co.elastic.clients.elasticsearch.cat.tasks.TasksRecord;
 import co.elastic.clients.elasticsearch.cluster.HealthResponse;
 import co.elastic.clients.elasticsearch.indices.IndicesStatsResponse;
 import co.elastic.clients.elasticsearch.indices.stats.IndicesStats;
@@ -20,6 +23,8 @@ import co.elastic.clients.elasticsearch.nodes.Stats;
 import lombok.Data;
 import net.nilosplace.ElasticSearchCli.commands.estop.model.IndexInfo;
 import net.nilosplace.ElasticSearchCli.commands.estop.model.NodeInfo;
+import net.nilosplace.ElasticSearchCli.commands.estop.model.Tree;
+import net.nilosplace.ElasticSearchCli.commands.estop.model.Tree.Node;
 
 @Data
 public class ClusterDataManager {
@@ -31,6 +36,28 @@ public class ClusterDataManager {
 
 	private List<NodeInfo> nodeInfos = new ArrayList<>();
 	private List<IndexInfo> indexInfos = new ArrayList<>();
+	private Tree<TasksRecord> taskTree = new Tree<>(null);
+
+	public void setTasksResp(TasksResponse tasksResp) {
+		this.tasksResp = tasksResp;
+
+		List<TasksRecord> taskList = tasksResp.valueBody();
+		Map<String, Node<TasksRecord>> taskMap = new HashMap<>();
+		taskTree = new Tree<>(null);
+
+		for (TasksRecord record : taskList) {
+			Node<TasksRecord> node = new Node<>(record);
+			taskMap.put(record.taskId(), node);
+		}
+		for (TasksRecord record : taskList) {
+			Node<TasksRecord> parent = taskMap.get(record.parentTaskId());
+			Node<TasksRecord> node = taskMap.get(record.taskId());
+			if (parent == null) {
+				parent = taskTree.getRoot();
+			}
+			parent.addChild(node);
+		}
+	}
 
 	public void setNodesStatsResp(NodesStatsResponse nodesStatsResp) {
 		this.nodesStatsResp = nodesStatsResp;

@@ -1,14 +1,9 @@
 package net.nilosplace.ElasticSearchCli.commands.estop.views;
 
-import java.awt.Point;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.util.Date;
 
-import com.googlecode.lanterna.TextColor.ANSI;
 import com.googlecode.lanterna.screen.Screen;
 
-import co.elastic.clients.elasticsearch.cat.nodes.NodesRecord;
 import net.nilosplace.ElasticSearchCli.commands.estop.ClusterDataManager;
 import net.nilosplace.ElasticSearchCli.commands.estop.model.NodeInfo;
 

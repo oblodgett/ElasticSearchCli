@@ -98,6 +98,10 @@ public abstract class ViewBase {
 		screen.newTextGraphics().setForegroundColor(ANSI.WHITE).putString(x + win.x + offset.x, y + win.y + offset.y, text);
 	}
 
+	public void printChar(int x, int y, char charToPrint) {
+		screen.newTextGraphics().setForegroundColor(clusterColor).setCharacter(x + win.x + offset.x, y + win.y + offset.y, charToPrint);
+	}
+
 	protected void updateOffset(int x, int y) {
 		offset.setLocation(offset.getX() + x, offset.getY() + y);
 	}
