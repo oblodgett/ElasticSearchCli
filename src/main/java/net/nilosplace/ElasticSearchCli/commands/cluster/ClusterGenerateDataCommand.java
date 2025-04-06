@@ -15,12 +15,14 @@ import net.nilosplace.process_display.ProcessDisplayHelper;
 
 public class ClusterGenerateDataCommand extends ClusterCommand {
 
+	private String indexName;
 	private String threadCount;
 	private String docAmount;
 	private ElasticsearchClient client;
 	private ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
 
-	public ClusterGenerateDataCommand(String docAmount, String threadCount) {
+	public ClusterGenerateDataCommand(String indexName, String docAmount, String threadCount) {
+		this.indexName = indexName;
 		this.docAmount = docAmount;
 		this.threadCount = threadCount;
 		this.client = configHelper.getEsClient();
@@ -73,7 +75,7 @@ public class ClusterGenerateDataCommand extends ClusterCommand {
 			while (docsPerThread > 0) {
 				try {
 					PersonDocument doc = new PersonDocument(reader, faker);
-					client.index(i -> i.index("test").document(doc));
+					client.index(i -> i.index(indexName).document(doc));
 					ph.progressProcess();
 				} catch (ElasticsearchException | IOException e) {
 					e.printStackTrace();

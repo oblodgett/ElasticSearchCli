@@ -5,7 +5,6 @@ ElasticSearchCli is a command-line interface (CLI) tool designed to interact wit
 ## Features
 
 - **Cluster Management:** Monitor and manage cluster health, nodes, and indices.
-- **Data Operations:** Perform CRUD (Create, Read, Update, Delete) operations on documents within indices.
 - **Search Functionality:** Execute complex search queries and aggregations.
 - **Configuration Management:** Manage cluster settings and configurations.
 
@@ -52,21 +51,58 @@ To build and install ElasticSearchCli from source:
 
 Once the CLI is running, you can execute various commands to interact with your Elasticsearch cluster. For example:
 
+- **Modify Cluster Config:**
+
+```bash
+> cluster set cluster.property somevalue
+> cluster get cluster.property
+```
+
+- **Generate Random Cluster Documents:**
+
+```bash
+> cluster generate indexName docAmount threads
+```
+
 - **Check Cluster Health:**
-  
-```bash
-  cluster nodes
-  ```
 
-- **List All Indices:**
-
-  
 ```bash
-  index list
-  ```
+> cluster info
+> cluster nodes
+```
+
+- **Indices Operations:**
+
+```bash
+> index list
+> index info
+> index switchalias indexName oldAlias newAlias
+> index delete indexName
+```
+
+- **Configure the Client:**
+
+```bash
+> config set name value
+> config get name
+> config print
+> config load file
+> config save file
+```
+
+- **Elastic Search TOP:**
+
+```bash
+> estop
+```
+
+[<img src="images/NodeView.png">](images/NodeView.png)
+
+[<img src="images/TaskView.png">](images/TaskView.png)
+
+[<img src="images/IndexView.png">](images/IndexView.png)
 
 For a full list of commands and their usage, refer to the `help` command within the CLI:
-
 
 ```bash
 help
