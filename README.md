@@ -173,4 +173,5 @@ Special thanks to all contributors and the broader Elasticsearch community for t
 
 ---
 
-*Note: This README is a template and may require updates to accurately reflect the current state of the ElasticSearchCli project. Please refer to the project's source code and documentation for the most up-to-date information.*
+* If you would like to see me create this client from scratch checkout this youtube playlist: https://www.youtube.com/playlist?list=PL-EiLgvCUULe4lfm4tf-VdFMdw4-o3p_A
+
