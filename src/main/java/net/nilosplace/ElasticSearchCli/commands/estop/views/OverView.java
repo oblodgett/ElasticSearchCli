@@ -1,8 +1,6 @@
 package net.nilosplace.ElasticSearchCli.commands.estop.views;
 
-import java.awt.Point;
 import java.io.IOException;
-import java.util.Date;
 
 import com.googlecode.lanterna.screen.Screen;
 

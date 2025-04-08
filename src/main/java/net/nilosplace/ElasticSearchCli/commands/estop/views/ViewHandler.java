@@ -1,21 +1,20 @@
 package net.nilosplace.ElasticSearchCli.commands.estop.views;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.screen.Screen;
-import java.awt.Point;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import net.nilosplace.ElasticSearchCli.commands.estop.ClusterDataManager;
 import net.nilosplace.ElasticSearchCli.commands.estop.ClusterDataPoller;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class ViewHandler extends Thread {
 
 	private Screen screen;

@@ -29,6 +29,7 @@ public class CommandProcessor {
 				processCommand(line);
 				System.out.print("> ");
 			}
+			scanner.close();
 		}
 	}
 

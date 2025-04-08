@@ -19,7 +19,7 @@ public abstract class ViewBase {
 	protected int height;
 	protected TextColor black = ANSI.BLACK;
 	protected TextColor clusterColor = ANSI.GREEN_BRIGHT;
-	protected TextCharacter space = new TextCharacter(' ');
+	protected TextCharacter space = TextCharacter.DEFAULT_CHARACTER;
 	protected Point win = new Point(3, 4);
 	protected Point offset = new Point(0, 0);
 	protected Screen screen;
@@ -40,25 +40,28 @@ public abstract class ViewBase {
 		screen.setCursorPosition(null);
 		clusterColor = manager.getClusterColor();
 
+		TextCharacter dlv = TextCharacter.fromCharacter(Symbols.DOUBLE_LINE_VERTICAL)[0];
+		TextCharacter dlh = TextCharacter.fromCharacter(Symbols.DOUBLE_LINE_HORIZONTAL)[0];
+
 		screen.newTextGraphics().drawLine(0, 0, width, 0, space.withBackgroundColor(clusterColor).withForegroundColor(black));
 		screen.newTextGraphics().drawLine(0, height, width, height, space.withBackgroundColor(clusterColor).withForegroundColor(black));
 		screen.newTextGraphics().setBackgroundColor(clusterColor).setForegroundColor(black).putCSIStyledString(2, 0, header + ": " + manager.getClusterName());
 		screen.newTextGraphics().setBackgroundColor(clusterColor).setForegroundColor(black).putCSIStyledString((width / 2) - (offset.toString().length() / 2), 0, offset.toString());
 		screen.newTextGraphics().setBackgroundColor(clusterColor).setForegroundColor(black).putCSIStyledString(2, height, defaultFooter + "  " + footer);
 		screen.newTextGraphics().setForegroundColor(clusterColor).setCharacter(0, 1, Symbols.DOUBLE_LINE_TOP_LEFT_CORNER);
-		screen.newTextGraphics().drawLine(1, 1, width - 1, 1, new TextCharacter(Symbols.DOUBLE_LINE_HORIZONTAL).withForegroundColor(clusterColor));
+		screen.newTextGraphics().drawLine(1, 1, width - 1, 1, dlh.withForegroundColor(clusterColor));
 		screen.newTextGraphics().setForegroundColor(clusterColor).setCharacter(width, 1, Symbols.DOUBLE_LINE_TOP_RIGHT_CORNER);
 		screen.newTextGraphics().setForegroundColor(clusterColor).setCharacter(0, 2, Symbols.DOUBLE_LINE_VERTICAL);
 		screen.newTextGraphics().setForegroundColor(clusterColor).setCharacter(width, 2, Symbols.DOUBLE_LINE_VERTICAL);
 		screen.newTextGraphics().setForegroundColor(clusterColor).setCharacter(0, 2, Symbols.DOUBLE_LINE_VERTICAL);
 		screen.newTextGraphics().setForegroundColor(clusterColor).setCharacter(width, 2, Symbols.DOUBLE_LINE_VERTICAL);
 		screen.newTextGraphics().setForegroundColor(clusterColor).setCharacter(0, 3, Symbols.DOUBLE_LINE_T_RIGHT);
-		screen.newTextGraphics().drawLine(1, 3, width - 1, 3, new TextCharacter(Symbols.DOUBLE_LINE_HORIZONTAL).withForegroundColor(clusterColor));
+		screen.newTextGraphics().drawLine(1, 3, width - 1, 3, dlh.withForegroundColor(clusterColor));
 		screen.newTextGraphics().setForegroundColor(clusterColor).setCharacter(width, 3, Symbols.DOUBLE_LINE_T_LEFT);
-		screen.newTextGraphics().drawLine(0, 4, 0, height - 3, new TextCharacter(Symbols.DOUBLE_LINE_VERTICAL).withForegroundColor(clusterColor));
-		screen.newTextGraphics().drawLine(width, 4, width, height - 3, new TextCharacter(Symbols.DOUBLE_LINE_VERTICAL).withForegroundColor(clusterColor));
+		screen.newTextGraphics().drawLine(0, 4, 0, height - 3, dlv.withForegroundColor(clusterColor));
+		screen.newTextGraphics().drawLine(width, 4, width, height - 3, dlv.withForegroundColor(clusterColor));
 		screen.newTextGraphics().setForegroundColor(clusterColor).setCharacter(0, height - 2, Symbols.DOUBLE_LINE_BOTTOM_LEFT_CORNER);
-		screen.newTextGraphics().drawLine(1, height - 2, width - 1, height - 2, new TextCharacter(Symbols.DOUBLE_LINE_HORIZONTAL).withForegroundColor(clusterColor));
+		screen.newTextGraphics().drawLine(1, height - 2, width - 1, height - 2, dlh.withForegroundColor(clusterColor));
 		screen.newTextGraphics().setForegroundColor(clusterColor).setCharacter(width, height - 2, Symbols.DOUBLE_LINE_BOTTOM_RIGHT_CORNER);
 		if (errorMessage != null) {
 			screen.newTextGraphics().putString(2, height - 1, "Error: " + errorMessage);

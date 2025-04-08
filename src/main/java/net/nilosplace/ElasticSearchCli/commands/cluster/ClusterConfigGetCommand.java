@@ -10,6 +10,7 @@ public class ClusterConfigGetCommand extends ClusterCommand {
 
 	public ClusterConfigGetCommand(String configName) {
 		this.configName = configName;
+		configName = this.configName;
 	}
 
 	@Override
@@ -18,7 +19,7 @@ public class ClusterConfigGetCommand extends ClusterCommand {
 		try {
 			GetClusterSettingsRequest request = new GetClusterSettingsRequest.Builder().includeDefaults(true).build();
 			GetClusterSettingsResponse resp = client.cluster().getSettings(request);
-			System.out.println(mapper.readTree(jsonUtil.toString(resp).replace("GetClusterSettingsResponse: ", "")).toPrettyString());
+			System.out.println(resp);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

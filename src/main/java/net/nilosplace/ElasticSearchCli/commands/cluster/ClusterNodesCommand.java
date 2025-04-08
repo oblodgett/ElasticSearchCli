@@ -1,7 +1,6 @@
 package net.nilosplace.ElasticSearchCli.commands.cluster;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import co.elastic.clients.elasticsearch.cat.NodesResponse;
 import co.elastic.clients.elasticsearch.nodes.NodesStatsResponse;
 
 public class ClusterNodesCommand extends ClusterCommand {

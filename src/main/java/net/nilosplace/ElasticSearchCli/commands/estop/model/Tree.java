@@ -17,7 +17,7 @@ public class Tree<T> {
 
 	public static class Node<T> {
 		@Getter private T data;
-		private Node<T> parent;
+		// private Node<T> parent;
 		@Getter private List<Node<T>> children = new ArrayList<>();
 
 		public Node(T data) {
