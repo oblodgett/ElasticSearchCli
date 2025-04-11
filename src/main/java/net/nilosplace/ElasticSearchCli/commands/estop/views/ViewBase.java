@@ -74,7 +74,7 @@ public abstract class ViewBase {
 		count = printBox("Indices: " + manager.getIndicesTotal(), count);
 		count = printBox("Shards: " + manager.getShardsTotal(), count);
 		count = printBox("Docs: " + manager.getCountTotal(), count);
-		count = printBox("Total Size: " + manager.getTotalSize(), count);
+		count = printBox("Total Size: " + ClusterDataManager.formatBytes(manager.getTotalSize()), count);
 
 		Date now = new Date();
 		screen.newTextGraphics().setBackgroundColor(clusterColor).setForegroundColor(black).putCSIStyledString(width - 30, 0, now.toString());

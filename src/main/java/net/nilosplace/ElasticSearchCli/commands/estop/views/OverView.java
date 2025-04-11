@@ -36,6 +36,9 @@ public class OverView extends ViewBase {
 			screen.clear();
 		}
 
+		manager.getNodeInfos();
+		manager.getIndexInfos();
+
 		screen.refresh();
 	}
 

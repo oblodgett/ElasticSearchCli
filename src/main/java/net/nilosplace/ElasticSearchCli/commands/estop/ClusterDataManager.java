@@ -1,6 +1,7 @@
 package net.nilosplace.ElasticSearchCli.commands.estop;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -83,6 +84,7 @@ public class ClusterDataManager {
 
 			nodeInfos.add(info);
 		}
+		nodeInfos.sort(Comparator.comparing(NodeInfo::getName));
 	}
 
 	public void setIndicesStatsResp(IndicesStatsResponse indicesStatsResp) {
@@ -100,6 +102,7 @@ public class ClusterDataManager {
 			info.setTotalSegmentCount(stats.total().segments().count());
 			indexInfos.add(info);
 		}
+		indexInfos.sort(Comparator.comparing(IndexInfo::getName));
 	}
 
 	public String getClusterName() {
