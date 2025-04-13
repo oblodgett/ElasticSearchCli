@@ -50,6 +50,7 @@ public class ViewHandler extends Thread {
 
 		try {
 			screen.startScreen();
+			screen.setCursorPosition(null);
 			currentView = overView;
 			currentView.draw(true);
 			currentView.drawHeaderAndFooter(errorMessage);
@@ -74,7 +75,7 @@ public class ViewHandler extends Thread {
 				Thread.sleep(20);
 			}
 			screen.stopScreen();
-
+			screen.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
@@ -123,11 +124,13 @@ public class ViewHandler extends Thread {
 							viewChanged = true;
 						}
 						case 'H', 'h' -> {
+							currentView = overView;
 							overView.toggleIndexesNodes();
 							viewChanged = true;
 						}
 						case 'R', 'r', ' ' -> {
 							viewChanged = true;
+							currentView.reset();
 							errorMessage = null;
 						}
 						default -> {
@@ -136,19 +139,19 @@ public class ViewHandler extends Thread {
 					}
 				}
 				case KeyType.ArrowUp -> {
-					currentView.updateOffset(0, -1);
-					screenChanged = true;
-				}
-				case KeyType.ArrowDown -> {
 					currentView.updateOffset(0, 1);
 					screenChanged = true;
 				}
+				case KeyType.ArrowDown -> {
+					currentView.updateOffset(0, -1);
+					screenChanged = true;
+				}
 				case KeyType.ArrowLeft -> {
-					currentView.updateOffset(-1, 0);
+					currentView.updateOffset(1, 0);
 					screenChanged = true;
 				}
 				case KeyType.ArrowRight -> {
-					currentView.updateOffset(1, 0);
+					currentView.updateOffset(-1, 0);
 					screenChanged = true;
 				}
 				default -> {

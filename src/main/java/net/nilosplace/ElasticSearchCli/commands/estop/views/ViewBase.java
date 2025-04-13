@@ -26,7 +26,7 @@ public abstract class ViewBase {
 	protected ClusterDataManager manager;
 	protected String header = "";
 	protected String footer = "";
-	protected String defaultFooter = "Quit: Q  Refresh: R  Overview: O  Index View: I  Node View: N  Tasks View: T  Shard View: S";
+	protected String defaultFooter = "Quit: Q  Re(fresh/set): R  Overview: O  Index View: I  Node View: N  Tasks View: T  Shard View: S";
 
 	public ViewBase(Screen screen, ClusterDataManager manager) {
 		this.screen = screen;
@@ -107,6 +107,10 @@ public abstract class ViewBase {
 
 	protected void updateOffset(int x, int y) {
 		offset.setLocation(offset.getX() + x, offset.getY() + y);
+	}
+
+	public void reset() {
+		offset.setLocation(0.0, 0.0);
 	}
 
 }

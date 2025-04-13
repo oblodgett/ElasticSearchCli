@@ -15,7 +15,7 @@ import net.nilosplace.ElasticSearchCli.commands.estop.model.NodeInfo;
 
 public class OverView extends ViewBase {
 
-	private boolean indexesThanNodes;
+	private boolean indexesThanNodes = true;
 
 	public OverView(Screen screen, ClusterDataManager manager) {
 		super(screen, manager);
@@ -25,9 +25,9 @@ public class OverView extends ViewBase {
 
 	public void setFooter() {
 		if (indexesThanNodes) {
-			footer = "Indexes/Nodes: H";
-		} else {
 			footer = "Nodes/Indexes: H";
+		} else {
+			footer = "Indexes/Nodes: H";
 		}
 	}
 
@@ -51,6 +51,9 @@ public class OverView extends ViewBase {
 			return;
 		}
 
+		int rowBuffer = 1;
+		int columnBuffer = 3;
+		
 		int[] columns;
 		int[] rows;
 
@@ -94,12 +97,12 @@ public class OverView extends ViewBase {
 				c++;
 			}
 				
-			int colStart = columns[0] + 2;
-			int rowStart = rows[0] + 1;
+			int colStart = columns[0] + columnBuffer;
+			int rowStart = rows[0] + rowBuffer;
 			c = 1;
 			for (NodeInfo nodeInfo : nodes) {
 				int r = 1;
-				rowStart = rows[0] + 1;
+				rowStart = rows[0] + rowBuffer;
 				printText(colStart, 0, nodeInfo.getName(), ANSI.WHITE);
 				for (IndexInfo indexInfo : indexes) {
 					if(c == 1) printText(0, rowStart, indexInfo.getName(), ANSI.WHITE);
@@ -118,10 +121,10 @@ public class OverView extends ViewBase {
 							rl++;
 				        }
 					}
-					rowStart += (rows[r] + 1);
+					rowStart += (rows[r] + rowBuffer);
 					r++;
 				}
-				colStart += (columns[c] + 2);
+				colStart += (columns[c] + columnBuffer);
 				c++;
 			}
 
@@ -135,8 +138,8 @@ public class OverView extends ViewBase {
 			for (IndexInfo indexInfo : indexes) {
 				int r = 1;
 				for (NodeInfo nodeInfo : nodes) {
-					if(indexInfo.getName().length() > columns[0]) {
-						columns[0] = indexInfo.getName().length();
+					if(nodeInfo.getName().length() > columns[0]) {
+						columns[0] = nodeInfo.getName().length();
 					}
 					List<ShardsRecord> shardList = shardMap.get(nodeInfo.getName()).get(indexInfo.getName());
 					if (shardList != null) {
@@ -166,12 +169,12 @@ public class OverView extends ViewBase {
 				c++;
 			}
 
-			int colStart = columns[0] + 2;
-			int rowStart = rows[0] + 1;
+			int colStart = columns[0] + columnBuffer;
+			int rowStart = rows[0] + rowBuffer;
 			c = 1;
 			for (IndexInfo indexInfo : indexes) {
 				int r = 1;
-				rowStart = rows[0] + 1;
+				rowStart = rows[0] + rowBuffer;
 				printText(colStart, 0, indexInfo.getName(), ANSI.WHITE);
 				for (NodeInfo nodeInfo : nodes) {
 					if(c == 1) printText(0, rowStart, nodeInfo.getName(), ANSI.WHITE);
@@ -190,25 +193,13 @@ public class OverView extends ViewBase {
 							rl++;
 				        }
 					}
-					rowStart += (rows[r] + 1);
+					rowStart += (rows[r] + rowBuffer);
 					r++;
 				}
-				colStart += (columns[c] + 2);
+				colStart += (columns[c] + columnBuffer);
 				c++;
 			}
 		}
-
-//		for (int r = 0; r < rows.length; r++) {
-//			int colStart = 0;
-//			int rowStart = 0;
-//			clearLine(r * 2);
-//			for (int c = 0; c < columns.length; c++) {
-//				System.out.println("R: " + r + " C: " + c + " V: " + values[c][r]);
-//				printText(colStart, rowStart, values[c][r], ANSI.WHITE);
-//				colStart += (columns[c] + 2);
-//				rowStart += (rows[r] + 1);
-//			}
-//		}
 
 		screen.refresh();
 	}
