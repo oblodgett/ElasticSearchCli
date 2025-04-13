@@ -4,7 +4,15 @@ options {
 	language=Java;
 }
 
-@header {
+@parser::header {
+import net.nilosplace.ElasticSearchCli.commands.*;
+import net.nilosplace.ElasticSearchCli.commands.cluster.*;
+import net.nilosplace.ElasticSearchCli.commands.config.*;
+import net.nilosplace.ElasticSearchCli.commands.estop.*;
+import net.nilosplace.ElasticSearchCli.commands.quit.*;
+}
+
+@lexer::header {
 import net.nilosplace.ElasticSearchCli.commands.*;
 import net.nilosplace.ElasticSearchCli.commands.cluster.*;
 import net.nilosplace.ElasticSearchCli.commands.config.*;

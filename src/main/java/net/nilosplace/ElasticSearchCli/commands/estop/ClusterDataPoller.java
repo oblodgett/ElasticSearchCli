@@ -32,6 +32,7 @@ public class ClusterDataPoller extends Thread {
 				manager.setNodesStatsResp(client.nodes().stats());
 				manager.setIndicesStatsResp(client.indices().stats());
 				manager.setTasksResp(client.cat().tasks());
+				manager.setShardsResp(client.cat().shards());
 				viewHandler.toggleDataUpdated();
 				Date end = new Date();
 				long pause = (pollInterval * 1000) - (end.getTime() - start.getTime());

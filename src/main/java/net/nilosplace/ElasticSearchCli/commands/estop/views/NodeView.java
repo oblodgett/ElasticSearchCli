@@ -2,6 +2,7 @@ package net.nilosplace.ElasticSearchCli.commands.estop.views;
 
 import java.io.IOException;
 
+import com.googlecode.lanterna.TextColor.ANSI;
 import com.googlecode.lanterna.screen.Screen;
 
 import net.nilosplace.ElasticSearchCli.commands.estop.ClusterDataManager;
@@ -12,7 +13,6 @@ public class NodeView extends ViewBase {
 	public NodeView(Screen screen, ClusterDataManager manager) {
 		super(screen, manager);
 		header = "Node View";
-		footer = "Overview: O  Index View: I  Node View: N  Tasks View: T";
 	}
 
 	@Override
@@ -67,7 +67,7 @@ public class NodeView extends ViewBase {
 			int colStart = 0;
 			clearLine(i * 2);
 			for (int k = 0; k < columns.length; k++) {
-				printText(colStart, i * 2, values[k][i]);
+				printText(colStart, i * 2, values[k][i], ANSI.WHITE);
 				colStart += (columns[k] + 2);
 			}
 		}

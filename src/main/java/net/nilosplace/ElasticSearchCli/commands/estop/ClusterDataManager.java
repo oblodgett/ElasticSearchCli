@@ -14,7 +14,9 @@ import com.googlecode.lanterna.TextColor.ANSI;
 
 import co.elastic.clients.elasticsearch._types.HealthStatus;
 import co.elastic.clients.elasticsearch.cat.MasterResponse;
+import co.elastic.clients.elasticsearch.cat.ShardsResponse;
 import co.elastic.clients.elasticsearch.cat.TasksResponse;
+import co.elastic.clients.elasticsearch.cat.shards.ShardsRecord;
 import co.elastic.clients.elasticsearch.cat.tasks.TasksRecord;
 import co.elastic.clients.elasticsearch.cluster.HealthResponse;
 import co.elastic.clients.elasticsearch.indices.IndicesStatsResponse;
@@ -33,11 +35,66 @@ public class ClusterDataManager {
 	private NodesStatsResponse nodesStatsResp;
 	private HealthResponse healthResp;
 	private MasterResponse masterResp;
+	private ShardsResponse shardsResp;
 	private TasksResponse tasksResp;
 
 	private List<NodeInfo> nodeInfos = new ArrayList<>();
 	private List<IndexInfo> indexInfos = new ArrayList<>();
 	private Tree<TasksRecord> taskTree = new Tree<>(null);
+	private Map<String, Map<String, List<ShardsRecord>>> shardMap;
+
+	public void setShardsResp(ShardsResponse shardsResp) {
+		this.shardsResp = shardsResp;
+		List<ShardsRecord> shardList = shardsResp.valueBody();
+		shardMap = new HashMap<>();
+
+		for (NodeInfo nodeInfo : nodeInfos) {
+			if (!shardMap.containsKey(nodeInfo.getName())) {
+				shardMap.put(nodeInfo.getName(), new HashMap<>());
+			}
+			Map<String, List<ShardsRecord>> nodeMap = shardMap.get(nodeInfo.getName());
+			for (IndexInfo indexInfo : indexInfos) {
+				if (!nodeMap.containsKey(indexInfo.getName())) {
+					nodeMap.put(indexInfo.getName(), new ArrayList<>());
+				}
+			}
+		}
+
+		for (ShardsRecord shardRecord : shardList) {
+			String nodeName = "";
+			if(shardRecord.state().equals("STARTED")) {
+				nodeName = shardRecord.node();
+				
+				List<ShardsRecord> localShardList = shardMap.get(nodeName).get(shardRecord.index());
+				if (localShardList != null) {
+					localShardList.add(shardRecord);
+				}
+				
+			} else if(shardRecord.state().equals("RELOCATING")) {
+				String[] array = shardRecord.node().split(" ");
+				// "node": "agr.stage.elasticsearch.server03 -> 172.31.30.2 JIsFAqL8QoiDhoY9CX1klw agr.stage.elasticsearch.server02"
+				nodeName = array[0];
+				
+				List<ShardsRecord> localShardList = shardMap.get(nodeName).get(shardRecord.index());
+				if (localShardList != null) {
+					localShardList.add(shardRecord);
+				}
+				
+				nodeName = array[4];
+				
+				localShardList = shardMap.get(nodeName).get(shardRecord.index());
+				if (localShardList != null) {
+					localShardList.add(shardRecord);
+				}
+			}
+			
+			//INITIALIZING: The shard is recovering from a peer shard or gateway.
+			//RELOCATING: The shard is relocating.
+			//STARTED: The shard has started.
+			//UNASSIGNED
+			
+		}
+	}
 
 	public void setTasksResp(TasksResponse tasksResp) {
 		this.tasksResp = tasksResp;
@@ -95,7 +152,7 @@ public class ClusterDataManager {
 			IndicesStats stats = entry.getValue();
 			info.setId(stats.uuid());
 			info.setName(entry.getKey());
-			info.setSize(stats.total().store().sizeInBytes());
+			info.setSize((long)stats.total().store().sizeInBytes());
 			info.setDocCount(stats.total().docs().count());
 			info.setPrimaryShardCount(stats.primaries().shardStats().totalCount());
 			info.setTotalShardCount(stats.total().shardStats().totalCount());

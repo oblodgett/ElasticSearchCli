@@ -24,6 +24,7 @@ public class ViewHandler extends Thread {
 	private NodeView nodeView;
 	private IndexView indexView;
 	private OverView overView;
+	private ShardView shardView;
 	private TaskView taskView;
 	private ViewBase currentView;
 	private String errorMessage;
@@ -40,6 +41,7 @@ public class ViewHandler extends Thread {
 		nodeView = new NodeView(screen, manager);
 		indexView = new IndexView(screen, manager);
 		overView = new OverView(screen, manager);
+		shardView = new ShardView(screen, manager);
 		taskView = new TaskView(screen, manager);
 	}
 
@@ -117,6 +119,10 @@ public class ViewHandler extends Thread {
 							viewChanged = true;
 						}
 						case 'S', 's' -> {
+							currentView = shardView;
+							viewChanged = true;
+						}
+						case 'H', 'h' -> {
 							overView.toggleIndexesNodes();
 							viewChanged = true;
 						}

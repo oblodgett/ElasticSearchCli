@@ -26,7 +26,7 @@ public abstract class ViewBase {
 	protected ClusterDataManager manager;
 	protected String header = "";
 	protected String footer = "";
-	protected String defaultFooter = "Quit: Q  Refresh: R";
+	protected String defaultFooter = "Quit: Q  Refresh: R  Overview: O  Index View: I  Node View: N  Tasks View: T  Shard View: S";
 
 	public ViewBase(Screen screen, ClusterDataManager manager) {
 		this.screen = screen;
@@ -97,8 +97,8 @@ public abstract class ViewBase {
 		screen.newTextGraphics().drawLine(2, ny, width - 2, ny, space.withBackgroundColor(black).withForegroundColor(black));
 	}
 
-	public void printText(int x, int y, String text) {
-		screen.newTextGraphics().setForegroundColor(ANSI.WHITE).putString(x + win.x + offset.x, y + win.y + offset.y, text);
+	public void printText(int x, int y, String text, ANSI color) {
+		screen.newTextGraphics().setForegroundColor(color).putString(x + win.x + offset.x, y + win.y + offset.y, text);
 	}
 
 	public void printChar(int x, int y, char charToPrint) {
