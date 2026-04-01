@@ -1,14 +1,13 @@
 package net.nilosplace.ElasticSearchCli.commands.estop.views;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import com.googlecode.lanterna.TextColor.ANSI;
 import com.googlecode.lanterna.screen.Screen;
 
-import co.elastic.clients.elasticsearch.cat.shards.ShardsRecord;
+import net.nilosplace.ElasticSearchCli.elastic.model.ShardInfo;
 import net.nilosplace.ElasticSearchCli.commands.estop.ClusterDataManager;
 import net.nilosplace.ElasticSearchCli.commands.estop.model.IndexInfo;
 import net.nilosplace.ElasticSearchCli.commands.estop.model.NodeInfo;
@@ -45,15 +44,15 @@ public class OverView extends ViewBase {
 		List<NodeInfo> nodes = manager.getNodeInfos();
 		List<IndexInfo> indexes = manager.getIndexInfos();
 		// Nodes by Indexes
-		Map<String, Map<String, List<ShardsRecord>>> shardMap = manager.getShardMap();
+		Map<String, Map<String, List<ShardInfo>>> shardMap = manager.getShardMap();
 
 		if (shardMap == null) {
 			return;
 		}
 
-		int rowBuffer = 1;
+		int rowBuffer = 0;
 		int columnBuffer = 3;
-		
+
 		int[] columns;
 		int[] rows;
 
@@ -69,13 +68,13 @@ public class OverView extends ViewBase {
 					if(indexInfo.getName().length() > columns[0]) {
 						columns[0] = indexInfo.getName().length();
 					}
-					List<ShardsRecord> shardList = shardMap.get(nodeInfo.getName()).get(indexInfo.getName());
+					List<ShardInfo> shardList = shardMap.get(nodeInfo.getName()).get(indexInfo.getName());
 					if (shardList != null) {
 						int rowCount = 0;
 						for (int i = 0; i < shardList.size(); i += 5) {
 							String text = "";
-							for (ShardsRecord shardsRecord :shardList.subList(i, Math.min(i + 5, shardList.size()))) {
-								text += "[" + shardsRecord.shard() + "]";
+							for (ShardInfo shardInfo : shardList.subList(i, Math.min(i + 5, shardList.size()))) {
+								text += "[" + shardInfo.getShard() + "]";
 							}
 							if (text.length() > columns[c]) {
 								columns[c] = text.length();
@@ -96,7 +95,7 @@ public class OverView extends ViewBase {
 				}
 				c++;
 			}
-				
+
 			int colStart = columns[0] + columnBuffer;
 			int rowStart = rows[0] + rowBuffer;
 			c = 1;
@@ -106,15 +105,15 @@ public class OverView extends ViewBase {
 				printText(colStart, 0, nodeInfo.getName(), ANSI.WHITE);
 				for (IndexInfo indexInfo : indexes) {
 					if(c == 1) printText(0, rowStart, indexInfo.getName(), ANSI.WHITE);
-					
-					List<ShardsRecord> shardList = shardMap.get(nodeInfo.getName()).get(indexInfo.getName());
+
+					List<ShardInfo> shardList = shardMap.get(nodeInfo.getName()).get(indexInfo.getName());
 					if (shardList != null) {
 						int rl = 0;
 						for (int i = 0; i < shardList.size(); i += 5) {
 							String text = "";
 							int cl = 0;
-							for (ShardsRecord shardsRecord: shardList.subList(i, Math.min(i + 5, shardList.size()))) {
-								text = "[" + shardsRecord.shard() + "]";
+							for (ShardInfo shardInfo: shardList.subList(i, Math.min(i + 5, shardList.size()))) {
+								text = "[" + shardInfo.getShard() + "]";
 								printText(colStart + cl, rowStart + rl, text, ANSI.WHITE);
 								cl += text.length();
 							}
@@ -129,7 +128,7 @@ public class OverView extends ViewBase {
 			}
 
 		} else {
-			
+
 			columns = new int[indexes.size() + 1];
 			rows = new int[nodes.size() + 1];
 
@@ -141,13 +140,13 @@ public class OverView extends ViewBase {
 					if(nodeInfo.getName().length() > columns[0]) {
 						columns[0] = nodeInfo.getName().length();
 					}
-					List<ShardsRecord> shardList = shardMap.get(nodeInfo.getName()).get(indexInfo.getName());
+					List<ShardInfo> shardList = shardMap.get(nodeInfo.getName()).get(indexInfo.getName());
 					if (shardList != null) {
 						int rowCount = 0;
 						for (int i = 0; i < shardList.size(); i += 5) {
 							String text = "";
-							for (ShardsRecord shardsRecord :shardList.subList(i, Math.min(i + 5, shardList.size()))) {
-								text += "[" + shardsRecord.shard() + "]";
+							for (ShardInfo shardInfo : shardList.subList(i, Math.min(i + 5, shardList.size()))) {
+								text += "[" + shardInfo.getShard() + "]";
 							}
 							if (text.length() > columns[c]) {
 								columns[c] = text.length();
@@ -178,15 +177,15 @@ public class OverView extends ViewBase {
 				printText(colStart, 0, indexInfo.getName(), ANSI.WHITE);
 				for (NodeInfo nodeInfo : nodes) {
 					if(c == 1) printText(0, rowStart, nodeInfo.getName(), ANSI.WHITE);
-					
-					List<ShardsRecord> shardList = shardMap.get(nodeInfo.getName()).get(indexInfo.getName());
+
+					List<ShardInfo> shardList = shardMap.get(nodeInfo.getName()).get(indexInfo.getName());
 					if (shardList != null) {
 						int rl = 0;
 						for (int i = 0; i < shardList.size(); i += 5) {
 							String text = "";
 							int cl = 0;
-							for (ShardsRecord shardsRecord: shardList.subList(i, Math.min(i + 5, shardList.size()))) {
-								text = "[" + shardsRecord.shard() + "]";
+							for (ShardInfo shardInfo: shardList.subList(i, Math.min(i + 5, shardList.size()))) {
+								text = "[" + shardInfo.getShard() + "]";
 								printText(colStart + cl, rowStart + rl, text, ANSI.WHITE);
 								cl += text.length();
 							}

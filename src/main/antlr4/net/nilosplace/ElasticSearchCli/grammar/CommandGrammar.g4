@@ -34,7 +34,9 @@ input returns[Command command]:
 config returns[ConfigCommand command]:
 	CONFIG SET name=ARG value=ARG { $command = new ConfigSetCommand($name.text, $value.text); }
 	| CONFIG GET name=ARG { $command = new ConfigGetCommand($name.text); }
+	| CONFIG PRINT name=ARG { $command = new ConfigPrintCommand($name.text); }
 	| CONFIG PRINT { $command = new ConfigPrintCommand(); }
+	| CONFIG LIST { $command = new ConfigListCommand(); }
 	| CONFIG LOAD filename=ARG { $command = new ConfigLoadCommand($filename.text); }
 	| CONFIG SAVE filename=ARG { $command = new ConfigSaveCommand($filename.text); }
 	;

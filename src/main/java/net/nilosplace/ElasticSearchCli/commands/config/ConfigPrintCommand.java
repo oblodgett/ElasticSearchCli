@@ -2,13 +2,22 @@ package net.nilosplace.ElasticSearchCli.commands.config;
 
 public class ConfigPrintCommand extends ConfigCommand {
 
-	public ConfigPrintCommand() {
+	private String name;
 
+	public ConfigPrintCommand() {
+		this.name = null;
+	}
+
+	public ConfigPrintCommand(String name) {
+		this.name = name;
 	}
 
 	@Override
 	public void execute() {
-		configHelper.print();
+		if (name == null) {
+			configHelper.print();
+		} else {
+			configHelper.printConfig(name);
+		}
 	}
-
 }

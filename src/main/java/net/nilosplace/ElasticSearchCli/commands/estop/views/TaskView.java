@@ -6,7 +6,7 @@ import com.googlecode.lanterna.Symbols;
 import com.googlecode.lanterna.TextColor.ANSI;
 import com.googlecode.lanterna.screen.Screen;
 
-import co.elastic.clients.elasticsearch.cat.tasks.TasksRecord;
+import net.nilosplace.ElasticSearchCli.elastic.model.TaskInfo;
 import net.nilosplace.ElasticSearchCli.commands.estop.ClusterDataManager;
 import net.nilosplace.ElasticSearchCli.commands.estop.model.Tree;
 import net.nilosplace.ElasticSearchCli.commands.estop.model.Tree.Node;
@@ -26,23 +26,23 @@ public class TaskView extends ViewBase {
 			screen.clear();
 		}
 
-		Tree<TasksRecord> tree = manager.getTaskTree();
+		Tree<TaskInfo> tree = manager.getTaskTree();
 
 		linePrint = 0;
 		printText(0, 0, "Tasks", ANSI.WHITE);
-		for (Node<TasksRecord> node : tree.getRoot().getChildren()) {
+		for (Node<TaskInfo> node : tree.getRoot().getChildren()) {
 			printTreeNode(node, 1);
 		}
 
 		screen.refresh();
 	}
 
-	public void printTreeNode(Node<TasksRecord> node, int level) {
+	public void printTreeNode(Node<TaskInfo> node, int level) {
 		linePrint++;
 		printChar(level * 3 - 2, linePrint, Symbols.DOUBLE_LINE_BOTTOM_LEFT_CORNER);
-		printText(level * 3, linePrint, node.getData().node() + " - " + node.getData().action(), ANSI.WHITE);
+		printText(level * 3, linePrint, node.getData().getNode() + " - " + node.getData().getAction(), ANSI.WHITE);
 		level++;
-		for (Node<TasksRecord> child : node.getChildren()) {
+		for (Node<TaskInfo> child : node.getChildren()) {
 			printTreeNode(child, level);
 		}
 

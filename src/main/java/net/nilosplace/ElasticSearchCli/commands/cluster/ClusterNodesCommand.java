@@ -1,15 +1,15 @@
 package net.nilosplace.ElasticSearchCli.commands.cluster;
 
-import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import co.elastic.clients.elasticsearch.nodes.NodesStatsResponse;
+import net.nilosplace.ElasticSearchCli.elastic.ClusterFacade;
+import net.nilosplace.ElasticSearchCli.elastic.model.NodesStatsInfo;
 
 public class ClusterNodesCommand extends ClusterCommand {
 
 	@Override
 	public void execute() {
-		ElasticsearchClient client = configHelper.getEsClient();
+		ClusterFacade facade = configHelper.getClusterFacade();
 		try {
-			NodesStatsResponse resp = client.nodes().stats();
+			NodesStatsInfo resp = facade.nodesStats();
 			System.out.println(resp);
 		} catch (Exception e) {
 			e.printStackTrace();

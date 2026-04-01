@@ -2,21 +2,20 @@ package net.nilosplace.ElasticSearchCli.commands.config;
 
 public class ConfigSaveCommand extends ConfigCommand {
 
-	private String filename;
+	private String name;
 
-	public ConfigSaveCommand(String filename) {
-		this.filename = filename;
+	public ConfigSaveCommand(String name) {
+		this.name = name;
 	}
 
 	@Override
 	public void execute() {
-		System.out.println("Save Config to: " + filename);
+		System.out.println("Saving config: " + name);
 		try {
-			configHelper.save(filename);
+			configHelper.save(name);
 		} catch (Exception e) {
-			System.err.println("Failed to save config to file: " + filename);
+			System.err.println("Failed to save config: " + name);
 			System.err.println("Error: " + e.getMessage());
 		}
 	}
-
 }

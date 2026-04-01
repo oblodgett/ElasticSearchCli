@@ -3,36 +3,39 @@ package net.nilosplace.ElasticSearchCli.commands.estop;
 import java.io.IOException;
 import java.util.Date;
 
-import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import co.elastic.clients.elasticsearch._types.ElasticsearchException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import net.nilosplace.ElasticSearchCli.elastic.ClusterFacade;
 import net.nilosplace.ElasticSearchCli.commands.estop.views.ViewHandler;
 import net.nilosplace.ElasticSearchCli.utils.ConfigHelper;
 
 public class ClusterDataPoller extends Thread {
 
+	private static final Logger log = LoggerFactory.getLogger(ClusterDataPoller.class);
 	private ConfigHelper configHelper = ConfigHelper.getInstance();
 	private ClusterDataManager manager;
 	private int pollInterval = 10;
-	private ElasticsearchClient client;
+	private ClusterFacade facade;
 	private ViewHandler viewHandler;
 
 	public ClusterDataPoller(ViewHandler viewHandler, ClusterDataManager manager, int pollInterval) {
 		this.viewHandler = viewHandler;
 		this.manager = manager;
 		this.pollInterval = pollInterval;
-		client = configHelper.getEsClient();
+		facade = configHelper.getClusterFacade();
 	}
 
 	public void run() {
 		while (true) {
 			try {
 				Date start = new Date();
-				manager.setMasterResp(client.cat().master());
-				manager.setHealthResp(client.cluster().health());
-				manager.setNodesStatsResp(client.nodes().stats());
-				manager.setIndicesStatsResp(client.indices().stats());
-				manager.setTasksResp(client.cat().tasks());
-				manager.setShardsResp(client.cat().shards());
+				manager.setMasterInfo(facade.catMaster());
+				manager.setHealthInfo(facade.clusterHealth());
+				manager.setNodesStatsInfo(facade.nodesStats());
+				manager.setIndicesStatsInfo(facade.indicesStats());
+				manager.setTaskList(facade.catTasks());
+				manager.setShardList(facade.catShards());
 				viewHandler.toggleDataUpdated();
 				Date end = new Date();
 				long pause = (pollInterval * 1000) - (end.getTime() - start.getTime());
@@ -40,11 +43,14 @@ public class ClusterDataPoller extends Thread {
 					Thread.sleep(pause);
 				}
 			} catch (InterruptedException e) {
+				log.warn("Poller interrupted", e);
 				viewHandler.setErrorMessage(e.getMessage());
 				break;
-			} catch (ElasticsearchException e) {
-				viewHandler.setErrorMessage(e.getMessage());
 			} catch (IOException e) {
+				log.error("Polling error: {}", e.getMessage(), e);
+				viewHandler.setErrorMessage(e.getMessage());
+			} catch (Exception e) {
+				log.error("Unexpected polling error: {}", e.getMessage(), e);
 				viewHandler.setErrorMessage(e.getMessage());
 			}
 		}

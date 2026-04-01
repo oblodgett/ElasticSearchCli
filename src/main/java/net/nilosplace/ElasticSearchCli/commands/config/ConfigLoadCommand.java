@@ -2,19 +2,19 @@ package net.nilosplace.ElasticSearchCli.commands.config;
 
 public class ConfigLoadCommand extends ConfigCommand {
 
-	private String filename;
+	private String name;
 
-	public ConfigLoadCommand(String filename) {
-		this.filename = filename;
+	public ConfigLoadCommand(String name) {
+		this.name = name;
 	}
 
 	@Override
 	public void execute() {
-		System.out.println("Loading Config from: " + filename);
+		System.out.println("Loading config: " + name);
 		try {
-			configHelper.load(filename);
+			configHelper.load(name);
 		} catch (Exception e) {
-			System.err.println("Failed to load config from file: " + filename);
+			System.err.println("Failed to load config: " + name);
 			System.err.println("Error: " + e.getMessage());
 		}
 	}

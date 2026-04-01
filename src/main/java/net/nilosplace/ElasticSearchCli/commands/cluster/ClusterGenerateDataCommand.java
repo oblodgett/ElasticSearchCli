@@ -8,8 +8,7 @@ import java.util.ArrayList;
 
 import com.github.javafaker.Faker;
 
-import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import co.elastic.clients.elasticsearch._types.ElasticsearchException;
+import net.nilosplace.ElasticSearchCli.elastic.ClusterFacade;
 import lombok.Data;
 import net.nilosplace.process_display.ProcessDisplayHelper;
 
@@ -18,14 +17,14 @@ public class ClusterGenerateDataCommand extends ClusterCommand {
 	private String indexName;
 	private String threadCount;
 	private String docAmount;
-	private ElasticsearchClient client;
+	private ClusterFacade facade;
 	private ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
 
 	public ClusterGenerateDataCommand(String indexName, String docAmount, String threadCount) {
 		this.indexName = indexName;
 		this.docAmount = docAmount;
 		this.threadCount = threadCount;
-		this.client = configHelper.getEsClient();
+		this.facade = configHelper.getClusterFacade();
 	}
 
 	@Override
@@ -75,9 +74,9 @@ public class ClusterGenerateDataCommand extends ClusterCommand {
 			while (docsPerThread > 0) {
 				try {
 					PersonDocument doc = new PersonDocument(reader, faker);
-					client.index(i -> i.index(indexName).document(doc));
+					facade.indexDocument(indexName, doc);
 					ph.progressProcess();
-				} catch (ElasticsearchException | IOException e) {
+				} catch (IOException e) {
 					e.printStackTrace();
 				}
 				docsPerThread--;

@@ -12,18 +12,11 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.TextColor.ANSI;
 
-import co.elastic.clients.elasticsearch._types.HealthStatus;
-import co.elastic.clients.elasticsearch.cat.MasterResponse;
-import co.elastic.clients.elasticsearch.cat.ShardsResponse;
-import co.elastic.clients.elasticsearch.cat.TasksResponse;
-import co.elastic.clients.elasticsearch.cat.shards.ShardsRecord;
-import co.elastic.clients.elasticsearch.cat.tasks.TasksRecord;
-import co.elastic.clients.elasticsearch.cluster.HealthResponse;
-import co.elastic.clients.elasticsearch.indices.IndicesStatsResponse;
-import co.elastic.clients.elasticsearch.indices.stats.IndicesStats;
-import co.elastic.clients.elasticsearch.nodes.NodesStatsResponse;
-import co.elastic.clients.elasticsearch.nodes.Stats;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import lombok.Data;
+import net.nilosplace.ElasticSearchCli.elastic.model.*;
 import net.nilosplace.ElasticSearchCli.commands.estop.model.IndexInfo;
 import net.nilosplace.ElasticSearchCli.commands.estop.model.NodeInfo;
 import net.nilosplace.ElasticSearchCli.commands.estop.model.Tree;
@@ -31,28 +24,29 @@ import net.nilosplace.ElasticSearchCli.commands.estop.model.Tree.Node;
 
 @Data
 public class ClusterDataManager {
-	private IndicesStatsResponse indicesStatsResp;
-	private NodesStatsResponse nodesStatsResp;
-	private HealthResponse healthResp;
-	private MasterResponse masterResp;
-	private ShardsResponse shardsResp;
-	private TasksResponse tasksResp;
+	private static final Logger log = LoggerFactory.getLogger(ClusterDataManager.class);
+	private IndicesStatsInfo indicesStatsInfo;
+	private NodesStatsInfo nodesStatsInfo;
+	private HealthInfo healthInfo;
+	private List<MasterInfo> masterInfo;
+	private List<ShardInfo> shardList;
+	private List<TaskInfo> taskList;
 
 	private List<NodeInfo> nodeInfos = new ArrayList<>();
 	private List<IndexInfo> indexInfos = new ArrayList<>();
-	private Tree<TasksRecord> taskTree = new Tree<>(null);
-	private Map<String, Map<String, List<ShardsRecord>>> shardMap;
+	private Tree<TaskInfo> taskTree = new Tree<>(null);
+	private Map<String, Map<String, List<ShardInfo>>> shardMap;
 
-	public void setShardsResp(ShardsResponse shardsResp) {
-		this.shardsResp = shardsResp;
-		List<ShardsRecord> shardList = shardsResp.valueBody();
+	public void setShardList(List<ShardInfo> shardList) {
+		this.shardList = shardList;
+		log.debug("Received {} shards, {} nodes, {} indexes for shard map", shardList.size(), nodeInfos.size(), indexInfos.size());
 		shardMap = new HashMap<>();
 
 		for (NodeInfo nodeInfo : nodeInfos) {
 			if (!shardMap.containsKey(nodeInfo.getName())) {
 				shardMap.put(nodeInfo.getName(), new HashMap<>());
 			}
-			Map<String, List<ShardsRecord>> nodeMap = shardMap.get(nodeInfo.getName());
+			Map<String, List<ShardInfo>> nodeMap = shardMap.get(nodeInfo.getName());
 			for (IndexInfo indexInfo : indexInfos) {
 				if (!nodeMap.containsKey(indexInfo.getName())) {
 					nodeMap.put(indexInfo.getName(), new ArrayList<>());
@@ -60,56 +54,57 @@ public class ClusterDataManager {
 			}
 		}
 
-		for (ShardsRecord shardRecord : shardList) {
+		for (ShardInfo shardInfo : shardList) {
 			String nodeName = "";
-			if(shardRecord.state().equals("STARTED")) {
-				nodeName = shardRecord.node();
-				
-				List<ShardsRecord> localShardList = shardMap.get(nodeName).get(shardRecord.index());
-				if (localShardList != null) {
-					localShardList.add(shardRecord);
+			if ("STARTED".equals(shardInfo.getState())) {
+				nodeName = shardInfo.getNode();
+
+				Map<String, List<ShardInfo>> nodeMap = shardMap.get(nodeName);
+				if (nodeMap != null) {
+					List<ShardInfo> localShardList = nodeMap.get(shardInfo.getIndex());
+					if (localShardList != null) {
+						localShardList.add(shardInfo);
+					}
 				}
-				
-			} else if(shardRecord.state().equals("RELOCATING")) {
-				String[] array = shardRecord.node().split(" ");
-				// "node": "agr.stage.elasticsearch.server03 -> 172.31.30.2 JIsFAqL8QoiDhoY9CX1klw agr.stage.elasticsearch.server02"
+
+			} else if ("RELOCATING".equals(shardInfo.getState())) {
+				String[] array = shardInfo.getNode().split(" ");
 				nodeName = array[0];
-				
-				List<ShardsRecord> localShardList = shardMap.get(nodeName).get(shardRecord.index());
-				if (localShardList != null) {
-					localShardList.add(shardRecord);
+
+				Map<String, List<ShardInfo>> nodeMap = shardMap.get(nodeName);
+				if (nodeMap != null) {
+					List<ShardInfo> localShardList = nodeMap.get(shardInfo.getIndex());
+					if (localShardList != null) {
+						localShardList.add(shardInfo);
+					}
 				}
-				
+
 				nodeName = array[4];
-				
-				localShardList = shardMap.get(nodeName).get(shardRecord.index());
-				if (localShardList != null) {
-					localShardList.add(shardRecord);
+
+				nodeMap = shardMap.get(nodeName);
+				if (nodeMap != null) {
+					List<ShardInfo> localShardList = nodeMap.get(shardInfo.getIndex());
+					if (localShardList != null) {
+						localShardList.add(shardInfo);
+					}
 				}
 			}
-			
-			//INITIALIZING: The shard is recovering from a peer shard or gateway.
-			//RELOCATING: The shard is relocating.
-			//STARTED: The shard has started.
-			//UNASSIGNED
-			
 		}
 	}
 
-	public void setTasksResp(TasksResponse tasksResp) {
-		this.tasksResp = tasksResp;
+	public void setTaskList(List<TaskInfo> taskList) {
+		this.taskList = taskList;
 
-		List<TasksRecord> taskList = tasksResp.valueBody();
-		Map<String, Node<TasksRecord>> taskMap = new HashMap<>();
+		Map<String, Node<TaskInfo>> taskMap = new HashMap<>();
 		taskTree = new Tree<>(null);
 
-		for (TasksRecord record : taskList) {
-			Node<TasksRecord> node = new Node<>(record);
-			taskMap.put(record.taskId(), node);
+		for (TaskInfo record : taskList) {
+			Node<TaskInfo> node = new Node<>(record);
+			taskMap.put(record.getId(), node);
 		}
-		for (TasksRecord record : taskList) {
-			Node<TasksRecord> parent = taskMap.get(record.parentTaskId());
-			Node<TasksRecord> node = taskMap.get(record.taskId());
+		for (TaskInfo record : taskList) {
+			Node<TaskInfo> parent = taskMap.get(record.getParentTaskId());
+			Node<TaskInfo> node = taskMap.get(record.getId());
 			if (parent == null) {
 				parent = taskTree.getRoot();
 			}
@@ -117,67 +112,80 @@ public class ClusterDataManager {
 		}
 	}
 
-	public void setNodesStatsResp(NodesStatsResponse nodesStatsResp) {
-		this.nodesStatsResp = nodesStatsResp;
+	public void setNodesStatsInfo(NodesStatsInfo nodesStatsInfo) {
+		this.nodesStatsInfo = nodesStatsInfo;
 		nodeInfos.clear();
-		for (Entry<String, Stats> entry : nodesStatsResp.nodes().entrySet()) {
+		for (Entry<String, NodeStats> entry : nodesStatsInfo.getNodes().entrySet()) {
 			NodeInfo info = new NodeInfo();
-			Stats stats = entry.getValue();
+			NodeStats stats = entry.getValue();
 			info.setId(entry.getKey());
-			info.setName(stats.name());
-			if (masterResp != null) {
-				if (masterResp.valueBody().get(0).node().equals(stats.name())) {
+			info.setName(stats.getName());
+			if (masterInfo != null && !masterInfo.isEmpty()) {
+				if (masterInfo.get(0).getNode().equals(stats.getName())) {
 					info.setMaster(true);
 				}
 			}
-			// info.setVersion(stats.v);
-			info.setIp(stats.host());
-			info.setHeap(stats.jvm().mem().heapUsedPercent() + "% = " + formatBytes(stats.jvm().mem().heapUsedInBytes()) + "/" + formatBytes(stats.jvm().mem().heapMaxInBytes()));
-			info.setDisk((int) (100.0 * (1.0 - ((double) stats.fs().total().availableInBytes() / (double) stats.fs().total().totalInBytes()))) + "% = " + formatBytes(stats.fs().total().availableInBytes()) + "/" + formatBytes(stats.fs().total().totalInBytes()));
-			info.setCpuPercent(stats.os().cpu().percent());
-			info.setLoadAverage(stats.os().cpu().loadAverage());
-			String uptime = DurationFormatUtils.formatDuration(stats.jvm().uptimeInMillis(), "dd:HH:mm:ss", true);
-			info.setUptime(uptime);
+			info.setIp(stats.getHost());
+			if (stats.getJvm() != null && stats.getJvm().getMem() != null) {
+				info.setHeap(stats.getJvm().getMem().getHeapUsedPercent() + "% = " + formatBytes(stats.getJvm().getMem().getHeapUsedInBytes()) + "/" + formatBytes(stats.getJvm().getMem().getHeapMaxInBytes()));
+			}
+			if (stats.getFs() != null && stats.getFs().getTotal() != null && stats.getFs().getTotal().getTotalInBytes() > 0) {
+				info.setDisk((int) (100.0 * (1.0 - ((double) stats.getFs().getTotal().getAvailableInBytes() / (double) stats.getFs().getTotal().getTotalInBytes()))) + "% = " + formatBytes(stats.getFs().getTotal().getAvailableInBytes()) + "/" + formatBytes(stats.getFs().getTotal().getTotalInBytes()));
+			}
+			if (stats.getOs() != null && stats.getOs().getCpu() != null) {
+				info.setCpuPercent(stats.getOs().getCpu().getPercent());
+				info.setLoadAverage(stats.getOs().getCpu().getLoadAverage());
+			}
+			if (stats.getJvm() != null) {
+				String uptime = DurationFormatUtils.formatDuration(stats.getJvm().getUptimeInMillis(), "dd:HH:mm:ss", true);
+				info.setUptime(uptime);
+			}
 
 			nodeInfos.add(info);
 		}
 		nodeInfos.sort(Comparator.comparing(NodeInfo::getName));
 	}
 
-	public void setIndicesStatsResp(IndicesStatsResponse indicesStatsResp) {
-		this.indicesStatsResp = indicesStatsResp;
+	public void setIndicesStatsInfo(IndicesStatsInfo indicesStatsInfo) {
+		this.indicesStatsInfo = indicesStatsInfo;
 		indexInfos.clear();
-		for (Entry<String, IndicesStats> entry : indicesStatsResp.indices().entrySet()) {
+		if (indicesStatsInfo.getIndices() == null) {
+			log.warn("IndicesStatsInfo.indices is null");
+			return;
+		}
+		log.debug("Received {} indices from /_stats", indicesStatsInfo.getIndices().size());
+		for (Entry<String, IndexStats> entry : indicesStatsInfo.getIndices().entrySet()) {
 			IndexInfo info = new IndexInfo();
-			IndicesStats stats = entry.getValue();
-			info.setId(stats.uuid());
+			IndexStats stats = entry.getValue();
+			info.setId(stats.getUuid());
 			info.setName(entry.getKey());
-			info.setSize((long)stats.total().store().sizeInBytes());
-			info.setDocCount(stats.total().docs().count());
-			info.setPrimaryShardCount(stats.primaries().shardStats().totalCount());
-			info.setTotalShardCount(stats.total().shardStats().totalCount());
-			info.setTotalSegmentCount(stats.total().segments().count());
+			info.setSize(stats.getTotal() != null && stats.getTotal().getStore() != null ? stats.getTotal().getStore().getSizeInBytes() : 0L);
+			info.setDocCount(stats.getTotal() != null && stats.getTotal().getDocs() != null ? stats.getTotal().getDocs().getCount() : 0L);
+			info.setPrimaryShardCount(stats.getPrimaries() != null && stats.getPrimaries().getShardStats() != null ? stats.getPrimaries().getShardStats().getTotalCount() : 0L);
+			info.setTotalShardCount(stats.getTotal() != null && stats.getTotal().getShardStats() != null ? stats.getTotal().getShardStats().getTotalCount() : 0L);
+			info.setTotalSegmentCount(stats.getTotal() != null && stats.getTotal().getSegments() != null ? stats.getTotal().getSegments().getCount() : 0);
 			indexInfos.add(info);
 		}
 		indexInfos.sort(Comparator.comparing(IndexInfo::getName));
 	}
 
 	public String getClusterName() {
-		if (healthResp != null) {
-			return healthResp.clusterName();
+		if (healthInfo != null) {
+			return healthInfo.getClusterName();
 		}
 		return "Cluster Unknown";
 	}
 
 	public TextColor getClusterColor() {
-		if (healthResp != null) {
-			if (healthResp.status() == HealthStatus.Green) {
+		if (healthInfo != null) {
+			String status = healthInfo.getStatus();
+			if ("green".equalsIgnoreCase(status)) {
 				return ANSI.GREEN_BRIGHT;
 			}
-			if (healthResp.status() == HealthStatus.Yellow) {
+			if ("yellow".equalsIgnoreCase(status)) {
 				return ANSI.YELLOW_BRIGHT;
 			}
-			if (healthResp.status() == HealthStatus.Red) {
+			if ("red".equalsIgnoreCase(status)) {
 				return ANSI.RED_BRIGHT;
 			}
 		}
@@ -185,36 +193,36 @@ public class ClusterDataManager {
 	}
 
 	public int getNodeTotal() {
-		if (healthResp != null) {
-			return healthResp.numberOfNodes();
+		if (healthInfo != null) {
+			return healthInfo.getNumberOfNodes();
 		}
 		return 0;
 	}
 
 	public int getIndicesTotal() {
-		if (indicesStatsResp != null) {
-			return indicesStatsResp.indices().size();
+		if (indicesStatsInfo != null) {
+			return indicesStatsInfo.getIndices().size();
 		}
 		return 0;
 	}
 
 	public int getShardsTotal() {
-		if (healthResp != null) {
-			return healthResp.activeShards();
+		if (healthInfo != null) {
+			return healthInfo.getActiveShards();
 		}
 		return 0;
 	}
 
 	public long getCountTotal() {
-		if (indicesStatsResp != null) {
-			return indicesStatsResp.all().total().docs().count();
+		if (indicesStatsInfo != null && indicesStatsInfo.getAll() != null && indicesStatsInfo.getAll().getTotal() != null && indicesStatsInfo.getAll().getTotal().getDocs() != null) {
+			return indicesStatsInfo.getAll().getTotal().getDocs().getCount();
 		}
 		return 0;
 	}
 
 	public long getTotalSize() {
-		if (indicesStatsResp != null) {
-			return indicesStatsResp.all().total().store().sizeInBytes();
+		if (indicesStatsInfo != null && indicesStatsInfo.getAll() != null && indicesStatsInfo.getAll().getTotal() != null && indicesStatsInfo.getAll().getTotal().getStore() != null) {
+			return indicesStatsInfo.getAll().getTotal().getStore().getSizeInBytes();
 		}
 		return 0;
 	}

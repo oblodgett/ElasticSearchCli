@@ -65,9 +65,9 @@ public class NodeView extends ViewBase {
 
 		for (int i = 0; i <= c; i++) {
 			int colStart = 0;
-			clearLine(i * 2);
+			clearLine(i);
 			for (int k = 0; k < columns.length; k++) {
-				printText(colStart, i * 2, values[k][i], ANSI.WHITE);
+				printText(colStart, i, values[k][i], ANSI.WHITE);
 				colStart += (columns[k] + 2);
 			}
 		}

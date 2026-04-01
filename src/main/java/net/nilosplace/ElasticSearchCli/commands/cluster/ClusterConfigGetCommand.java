@@ -1,8 +1,7 @@
 package net.nilosplace.ElasticSearchCli.commands.cluster;
 
-import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import co.elastic.clients.elasticsearch.cluster.GetClusterSettingsRequest;
-import co.elastic.clients.elasticsearch.cluster.GetClusterSettingsResponse;
+import net.nilosplace.ElasticSearchCli.elastic.ClusterFacade;
+import net.nilosplace.ElasticSearchCli.elastic.model.ClusterSettingsInfo;
 
 public class ClusterConfigGetCommand extends ClusterCommand {
 
@@ -15,10 +14,9 @@ public class ClusterConfigGetCommand extends ClusterCommand {
 
 	@Override
 	public void execute() {
-		ElasticsearchClient client = configHelper.getEsClient();
+		ClusterFacade facade = configHelper.getClusterFacade();
 		try {
-			GetClusterSettingsRequest request = new GetClusterSettingsRequest.Builder().includeDefaults(true).build();
-			GetClusterSettingsResponse resp = client.cluster().getSettings(request);
+			ClusterSettingsInfo resp = facade.clusterSettings(true);
 			System.out.println(resp);
 		} catch (Exception e) {
 			e.printStackTrace();
