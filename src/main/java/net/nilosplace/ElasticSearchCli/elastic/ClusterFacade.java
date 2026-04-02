@@ -7,6 +7,8 @@ import net.nilosplace.ElasticSearchCli.elastic.model.*;
 
 public interface ClusterFacade {
 
+	String SHARD_COLUMNS = "index,shard,prirep,state,docs,store,ip,node,segments.count,segments.memory,search.query_total,unassigned.reason";
+
 	VersionInfo getVersion() throws IOException;
 
 	HealthInfo clusterHealth() throws IOException;

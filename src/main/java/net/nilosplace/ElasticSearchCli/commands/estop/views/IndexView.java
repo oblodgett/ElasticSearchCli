@@ -21,12 +21,16 @@ public class IndexView extends ViewBase {
 			screen.clear();
 		}
 
-		int colCount = 2;
+		int colCount = 6;
 		int[] columns = new int[colCount];
 		String[][] values = new String[colCount][manager.getIndicesTotal() + 1];
 
 		values[0][0] = "Name";
-		values[1][0] = "Count";
+		values[1][0] = "Docs";
+		values[2][0] = "Size";
+		values[3][0] = "Pri";
+		values[4][0] = "Total";
+		values[5][0] = "Segs";
 
 		for (int i = 0; i < colCount; i++) {
 			columns[i] = values[i][0].length();
@@ -36,6 +40,10 @@ public class IndexView extends ViewBase {
 			c++;
 			values[0][c] = indexInfo.getName();
 			values[1][c] = indexInfo.getDocCount() + "";
+			values[2][c] = indexInfo.getSize() != null ? ClusterDataManager.formatBytes(indexInfo.getSize()) : "";
+			values[3][c] = indexInfo.getPrimaryShardCount() + "";
+			values[4][c] = indexInfo.getTotalShardCount() + "";
+			values[5][c] = indexInfo.getTotalSegmentCount() + "";
 
 			for (int i = 0; i < colCount; i++) {
 				if (values[i][c].length() > columns[i]) {

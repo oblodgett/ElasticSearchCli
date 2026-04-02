@@ -42,7 +42,7 @@ public class Os2Adapter implements ClusterFacade {
 
 	@Override
 	public List<ShardInfo> catShards() throws IOException {
-		return api.catShards("json");
+		return api.catShards("json", SHARD_COLUMNS);
 	}
 
 	@Override

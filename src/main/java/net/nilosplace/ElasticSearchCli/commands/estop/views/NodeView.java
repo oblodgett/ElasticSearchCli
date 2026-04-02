@@ -45,16 +45,15 @@ public class NodeView extends ViewBase {
 		for (NodeInfo nodeInfo : manager.getNodeInfos()) {
 			c++;
 			values[0][c] = nodeInfo.isMaster() ? "*" : "-";
-			values[1][c] = nodeInfo.getName();
-			// values[2][c] = nodeInfo.getVersion();
-			values[2][c] = nodeInfo.getIp();
-			values[3][c] = nodeInfo.getCpuPercent() + "%";
-			values[4][c] = nodeInfo.getLoadAverage().get("1m") + "";
-			values[5][c] = nodeInfo.getLoadAverage().get("5m") + "";
-			values[6][c] = nodeInfo.getLoadAverage().get("15m") + "";
-			values[7][c] = nodeInfo.getHeap();
-			values[8][c] = nodeInfo.getDisk();
-			values[9][c] = nodeInfo.getUptime();
+			values[1][c] = s(nodeInfo.getName());
+			values[2][c] = s(nodeInfo.getIp());
+			values[3][c] = nodeInfo.getCpuPercent() != null ? nodeInfo.getCpuPercent() + "%" : "";
+			values[4][c] = nodeInfo.getLoadAverage() != null ? s(nodeInfo.getLoadAverage().get("1m")) : "";
+			values[5][c] = nodeInfo.getLoadAverage() != null ? s(nodeInfo.getLoadAverage().get("5m")) : "";
+			values[6][c] = nodeInfo.getLoadAverage() != null ? s(nodeInfo.getLoadAverage().get("15m")) : "";
+			values[7][c] = s(nodeInfo.getHeap());
+			values[8][c] = s(nodeInfo.getDisk());
+			values[9][c] = s(nodeInfo.getUptime());
 
 			for (int i = 0; i < colCount; i++) {
 				if (values[i][c].length() > columns[i]) {
@@ -73,6 +72,10 @@ public class NodeView extends ViewBase {
 		}
 
 		screen.refresh();
+	}
+
+	private String s(Object value) {
+		return value != null ? value.toString() : "";
 	}
 
 }

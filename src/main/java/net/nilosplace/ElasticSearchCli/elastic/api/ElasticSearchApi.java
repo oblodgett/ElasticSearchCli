@@ -34,7 +34,7 @@ public interface ElasticSearchApi {
 
 	@GET
 	@Path("_cat/shards")
-	List<ShardInfo> catShards(@QueryParam("format") String format) throws IOException;
+	List<ShardInfo> catShards(@QueryParam("format") String format, @QueryParam("h") String columns) throws IOException;
 
 	@GET
 	@Path("_cat/tasks")

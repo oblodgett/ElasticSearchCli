@@ -29,7 +29,7 @@ public class ShardView extends ViewBase {
 			return;
 		}
 
-		int colCount = 7;
+		int colCount = 11;
 		int[] columns = new int[colCount];
 		String[][] values = new String[colCount][shards.size() + 1];
 
@@ -39,7 +39,11 @@ public class ShardView extends ViewBase {
 		values[3][0] = "State";
 		values[4][0] = "Docs";
 		values[5][0] = "Store";
-		values[6][0] = "Node";
+		values[6][0] = "Segs";
+		values[7][0] = "Seg Mem";
+		values[8][0] = "Queries";
+		values[9][0] = "Node";
+		values[10][0] = "Unassigned Reason";
 
 		for (int i = 0; i < colCount; i++) {
 			columns[i] = values[i][0].length();
@@ -48,13 +52,17 @@ public class ShardView extends ViewBase {
 		int c = 0;
 		for (ShardInfo shard : shards) {
 			c++;
-			values[0][c] = shard.getIndex() != null ? shard.getIndex() : "";
-			values[1][c] = shard.getShard() != null ? shard.getShard() : "";
-			values[2][c] = shard.getPrirep() != null ? shard.getPrirep() : "";
-			values[3][c] = shard.getState() != null ? shard.getState() : "";
-			values[4][c] = shard.getDocs() != null ? shard.getDocs() : "";
-			values[5][c] = shard.getStore() != null ? shard.getStore() : "";
-			values[6][c] = shard.getNode() != null ? shard.getNode() : "";
+			values[0][c] = s(shard.getIndex());
+			values[1][c] = s(shard.getShard());
+			values[2][c] = s(shard.getPrirep());
+			values[3][c] = s(shard.getState());
+			values[4][c] = s(shard.getDocs());
+			values[5][c] = s(shard.getStore());
+			values[6][c] = s(shard.getSegmentsCount());
+			values[7][c] = s(shard.getSegmentsMemory());
+			values[8][c] = s(shard.getSearchQueryTotal());
+			values[9][c] = s(shard.getNode());
+			values[10][c] = s(shard.getUnassignedReason());
 
 			for (int i = 0; i < colCount; i++) {
 				if (values[i][c].length() > columns[i]) {
@@ -81,5 +89,9 @@ public class ShardView extends ViewBase {
 		}
 
 		screen.refresh();
+	}
+
+	private String s(Object value) {
+		return value != null ? value.toString() : "";
 	}
 }

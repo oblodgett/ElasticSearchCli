@@ -54,6 +54,26 @@ public class ClusterDataManager {
 			}
 		}
 
+		// Count shards per index from the actual shard list
+		Map<String, long[]> shardCounts = new HashMap<>();
+		for (ShardInfo shardInfo : shardList) {
+			String idx = shardInfo.getIndex();
+			if (idx != null) {
+				shardCounts.computeIfAbsent(idx, k -> new long[2]);
+				shardCounts.get(idx)[1]++; // total
+				if ("p".equals(shardInfo.getPrirep())) {
+					shardCounts.get(idx)[0]++; // primary
+				}
+			}
+		}
+		for (IndexInfo indexInfo : indexInfos) {
+			long[] counts = shardCounts.get(indexInfo.getName());
+			if (counts != null) {
+				indexInfo.setPrimaryShardCount(counts[0]);
+				indexInfo.setTotalShardCount(counts[1]);
+			}
+		}
+
 		for (ShardInfo shardInfo : shardList) {
 			String nodeName = "";
 			if ("STARTED".equals(shardInfo.getState())) {
